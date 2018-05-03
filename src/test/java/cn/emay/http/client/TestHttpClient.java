@@ -1,9 +1,12 @@
 package cn.emay.http.client;
 
+import org.junit.Test;
+
 public class TestHttpClient {
 
-	public static void main(String[] args) {
+	@Test
+	public void testClient() {
 		
 	}
-	
+
 }
