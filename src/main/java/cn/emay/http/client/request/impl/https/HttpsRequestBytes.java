@@ -23,5 +23,14 @@ public class HttpsRequestBytes extends HttpRequest<byte[]> {
 	public HttpsRequestBytes(HttpRequestParams<byte[]> httpParams, HttpsParams httpsParams) {
 		super(httpParams, httpsParams, new HttpRequestPraserBytes());
 	}
+	
+	/**
+	 * 
+	 * @param httpParams
+	 *            http请求参数
+	 */
+	public HttpsRequestBytes(HttpRequestParams<byte[]> httpParams) {
+		super(httpParams, null, new HttpRequestPraserBytes());
+	}
 
 }

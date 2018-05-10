@@ -17,6 +17,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,10 +29,13 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 
 import cn.emay.http.client.common.HttpResultCode;
 import cn.emay.http.client.request.HttpRequest;
+import cn.emay.http.client.request.params.HttpsParams;
 import cn.emay.http.client.response.parser.HttpResponsePraser;
 
 /**
@@ -375,8 +379,7 @@ public class HttpClient {
 
 	private HttpURLConnection genHttpsConn(URL console, HttpRequest<?> request)
 			throws UnrecoverableKeyException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException, CertificateException, IOException {
-		SSLContext ctx = getSSLContext(request.getHttpsParams().getPassword(), request.getHttpsParams().getKeyStorePath(), request.getHttpsParams().getTrustStorePath(),
-				request.getHttpsParams().getAlgorithm());
+		SSLContext ctx = getSSLContext(request.getHttpsParams());
 		HttpsURLConnection sconn = (HttpsURLConnection) console.openConnection();
 		sconn.setSSLSocketFactory(ctx.getSocketFactory());
 		sconn.setHostnameVerifier(new HostnameVerifier() {
@@ -401,14 +404,14 @@ public class HttpClient {
 	 * @throws NoSuchAlgorithmException
 	 * @throws Exception
 	 */
-	private KeyStore getKeyStore(String password, String keyStorePath, String algorithm) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
+	private KeyStore getKeyStore(HttpsParams params) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
 		// 实例化密钥库 KeyStore用于存放证书，创建对象时 指定交换数字证书的加密标准
 		// 指定交换数字证书的加密标准
-		KeyStore ks = KeyStore.getInstance(algorithm);
+		KeyStore ks = KeyStore.getInstance(params.getAlgorithm());
 		// 获得密钥库文件流
-		FileInputStream is = new FileInputStream(keyStorePath);
+		FileInputStream is = new FileInputStream(params.getKeyStorePath());
 		// 加载密钥库
-		ks.load(is, password.toCharArray());
+		ks.load(is, params.getPassword().toCharArray());
 		// 关闭密钥库文件流
 		is.close();
 		return ks;
@@ -432,26 +435,44 @@ public class HttpClient {
 	 * @throws KeyManagementException
 	 * @throws Exception
 	 */
-	private SSLContext getSSLContext(String password, String keyStorePath, String trustStorePath, String algorithm)
-			throws NoSuchAlgorithmException, KeyStoreException, CertificateException, IOException, UnrecoverableKeyException, KeyManagementException {
-		// 实例化密钥库 KeyManager选择证书证明自己的身份
-		KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-		// 获得密钥库
-		KeyStore keyStore = getKeyStore(password, keyStorePath, algorithm);
-		// 初始化密钥工厂
-		keyManagerFactory.init(keyStore, password.toCharArray());
-		// 实例化信任库 TrustManager决定是否信任对方的证书
-		TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-		// 获得信任库
-		KeyStore trustStore = getKeyStore(password, trustStorePath, algorithm);
-		// 初始化信任库
-		trustManagerFactory.init(trustStore);
+	private SSLContext getSSLContext(HttpsParams params) throws NoSuchAlgorithmException, KeyStoreException, CertificateException, IOException, UnrecoverableKeyException, KeyManagementException {
 		// 实例化SSL上下文
 		SSLContext ctx = SSLContext.getInstance("TLS");
-		// 初始化SSL上下文
-		ctx.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), new java.security.SecureRandom());
-		// 获得SSLSocketFactory
+		if (params != null) {
+			// 实例化密钥库 KeyManager选择证书证明自己的身份
+			KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+			// 实例化信任库 TrustManager决定是否信任对方的证书
+			TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+			// 获得密钥库
+			KeyStore keyStore = getKeyStore(params);
+			// 初始化密钥工厂
+			keyManagerFactory.init(keyStore, params.getPassword().toCharArray());
+			// 获得信任库
+			KeyStore trustStore = getKeyStore(params);
+			// 初始化信任库
+			trustManagerFactory.init(trustStore);
+			// 初始化SSL上下文
+			ctx.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), new java.security.SecureRandom());
+		} else {
+			ctx.init(null, new TrustManager[] { myX509TrustManager }, new java.security.SecureRandom());
+		}
 		return ctx;
 	}
+
+	private TrustManager myX509TrustManager = new X509TrustManager() {
+
+		@Override
+		public X509Certificate[] getAcceptedIssuers() {
+			return null;
+		}
+
+		@Override
+		public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+		}
+
+		@Override
+		public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+		}
+	};
 
 }

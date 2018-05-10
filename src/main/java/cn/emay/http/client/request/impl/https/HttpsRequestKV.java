@@ -25,5 +25,16 @@ public class HttpsRequestKV extends HttpRequest<Map<String, String>> {
 	public HttpsRequestKV(HttpRequestParams<Map<String, String>> httpParams, HttpsParams httpsParams) {
 		super(httpParams, httpsParams, new HttpRequestPraserKV());
 	}
+	
+	/**
+	 * 
+	 * @param httpParams
+	 *            http请求参数
+	 * @param httpsParams
+	 *            https参数
+	 */
+	public HttpsRequestKV(HttpRequestParams<Map<String, String>> httpParams) {
+		super(httpParams, null, new HttpRequestPraserKV());
+	}
 
 }

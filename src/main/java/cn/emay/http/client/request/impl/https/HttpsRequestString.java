@@ -23,5 +23,15 @@ public class HttpsRequestString extends HttpRequest<String> {
 	public HttpsRequestString(HttpRequestParams<String> httpParams, HttpsParams httpsParams) {
 		super(httpParams, httpsParams, new HttpRequestPraserString());
 	}
+	
+	/**
+	 * 
+	 * @param httpParams
+	 *            http请求参数
+	 */
+	public HttpsRequestString(HttpRequestParams<String> httpParams) {
+		super(httpParams, null, new HttpRequestPraserString());
+	}
+
 
 }

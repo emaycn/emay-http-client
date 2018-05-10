@@ -48,7 +48,9 @@ public class HttpRequest<T> {
 	 *            内容解析器
 	 */
 	protected HttpRequest(HttpRequestParams<T> httpParams, HttpRequestPraser<T> contentPraser) {
-		this(httpParams, null, contentPraser);
+		this.httpParams = httpParams;
+		this.contentPraser = contentPraser;
+		isHttps = false;
 	}
 
 	/**
@@ -64,11 +66,7 @@ public class HttpRequest<T> {
 		this.httpParams = httpParams;
 		this.httpsParams = httpsParams;
 		this.contentPraser = contentPraser;
-		if (httpsParams == null) {
-			isHttps = false;
-		} else {
-			isHttps = true;
-		}
+		isHttps = true;
 	}
 
 	public boolean isHttps() {
