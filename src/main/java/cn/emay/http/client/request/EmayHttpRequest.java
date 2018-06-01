@@ -10,7 +10,7 @@ import cn.emay.http.client.request.params.EmayHttpsRequestParams;
  *
  * @param <T>
  */
-public abstract class EmayHttpRequest<T> {
+public class EmayHttpRequest<T> {
 
 	/**
 	 * http参数
@@ -41,7 +41,7 @@ public abstract class EmayHttpRequest<T> {
 	 * @param contentPraser
 	 *            内容解析器
 	 */
-	protected EmayHttpRequest(EmayHttpRequestParams<T> httpParams) {
+	public EmayHttpRequest(EmayHttpRequestParams<T> httpParams) {
 		this.httpParams = httpParams;
 		isHttps = false;
 	}
@@ -55,7 +55,7 @@ public abstract class EmayHttpRequest<T> {
 	 * @param contentPraser
 	 *            内容解析器
 	 */
-	protected EmayHttpRequest(EmayHttpRequestParams<T> httpParams, EmayHttpsRequestParams httpsParams) {
+	public EmayHttpRequest(EmayHttpRequestParams<T> httpParams, EmayHttpsRequestParams httpsParams) {
 		this.httpParams = httpParams;
 		this.httpsParams = httpsParams;
 		isHttps = true;

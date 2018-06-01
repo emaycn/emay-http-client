@@ -13,6 +13,35 @@ import cn.emay.http.client.request.params.EmayHttpRequestParams;
  *
  */
 public class EmayHttpRequestParamsKV extends EmayHttpRequestParams<Map<String, String>> {
+	
+
+	/**
+	 * 
+	 * @param url
+	 *            URL
+	 */
+	public EmayHttpRequestParamsKV(String url) {
+		super(url);
+	}
+
+	/**
+	 * 
+	 * @param url
+	 *            URL
+	 * @param charSet
+	 *            编码
+	 * @param method
+	 *            Http方法
+	 * @param headers
+	 *            头信息
+	 * @param cookies
+	 *            cookie信息
+	 * @param params
+	 *            传输数据
+	 */
+	public EmayHttpRequestParamsKV(String url, String charSet, String method, Map<String, String> headers, Map<String, String> cookies, Map<String, String> params) {
+		super(url, charSet, method, headers, cookies, params);
+	}
 
 	/**
 	 * 请求内容byte数组

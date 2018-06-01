@@ -19,10 +19,6 @@ public abstract class EmayHttpRequestParams<T> {
 	private Map<String, String> cookies;// cookie信息
 	private T params;// 传输数据
 
-	public EmayHttpRequestParams() {
-
-	}
-
 	/**
 	 * 
 	 * @param url
