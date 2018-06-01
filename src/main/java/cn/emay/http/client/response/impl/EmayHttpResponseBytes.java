@@ -29,8 +29,8 @@ public class EmayHttpResponseBytes extends EmayHttpResponse<byte[]> {
 	 * @param result
 	 *            http响应数据
 	 */
-	public EmayHttpResponseBytes(EmayHttpResultCode resultCode, int httpCode, Map<String, String> headers, List<String> cookies, String charSet, byte[] result) {
-		super(resultCode, httpCode, headers, cookies, charSet, result);
+	public EmayHttpResponseBytes(EmayHttpResultCode resultCode, int httpCode, Map<String, String> headers, List<String> cookies, String charSet, byte[] result, Throwable throwable) {
+		super(resultCode, httpCode, headers, cookies, charSet, result, throwable);
 	}
 
 }

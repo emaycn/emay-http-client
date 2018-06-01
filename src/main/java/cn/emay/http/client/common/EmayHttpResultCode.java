@@ -15,7 +15,7 @@ public enum EmayHttpResultCode {
 	ERROR_CHARSET("编码错误", "ERROR-CHARSET"), //
 	ERROR_CONNECT("访问失败", "ERROR-CONNECT"), //
 	ERROR_TIMEOUT("访问超时", "ERROR-TIMEOUT"), //
-
+	ERROR_OTHER("其他异常", "ERROR-OTHER"), //
 	;
 
 	/**

@@ -15,21 +15,21 @@ import cn.emay.http.client.response.parser.EmayHttpResponsePraser;
  * @author Frank
  *
  */
-public class EmayHttpResponseStringPraser implements EmayHttpResponsePraser<EmayHttpResponseString>{
+public class EmayHttpResponseStringPraser implements EmayHttpResponsePraser<EmayHttpResponseString> {
 
 	@Override
-	public EmayHttpResponseString prase(EmayHttpResultCode resultCode, int httpCode, Map<String, String> headers, List<String> cookies, String charSet, ByteArrayOutputStream outputStream) {
+	public EmayHttpResponseString prase(EmayHttpResultCode resultCode, int httpCode, Map<String, String> headers, List<String> cookies, String charSet, ByteArrayOutputStream outputStream,
+			Throwable throwable) {
 		String st = null;
 		try {
-			if(outputStream != null){
+			if (outputStream != null) {
 				byte[] resultBytes = outputStream.toByteArray();
 				st = new String(resultBytes, charSet);
 			}
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+			throw new IllegalArgumentException(e);
 		}
-		return new EmayHttpResponseString(resultCode, httpCode, headers, cookies, charSet, st);
+		return new EmayHttpResponseString(resultCode, httpCode, headers, cookies, charSet, st, throwable);
 	}
 
-	
 }

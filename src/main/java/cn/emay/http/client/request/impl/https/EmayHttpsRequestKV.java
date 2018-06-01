@@ -5,7 +5,6 @@ import java.util.Map;
 import cn.emay.http.client.request.EmayHttpRequest;
 import cn.emay.http.client.request.params.EmayHttpRequestParams;
 import cn.emay.http.client.request.params.EmayHttpsRequestParams;
-import cn.emay.http.client.request.parser.impl.EmayHttpRequestPraserKV;
 
 /**
  * Https 请求实体<Map<String, String>>
@@ -23,9 +22,9 @@ public class EmayHttpsRequestKV extends EmayHttpRequest<Map<String, String>> {
 	 *            https参数
 	 */
 	public EmayHttpsRequestKV(EmayHttpRequestParams<Map<String, String>> httpParams, EmayHttpsRequestParams httpsParams) {
-		super(httpParams, httpsParams, new EmayHttpRequestPraserKV());
+		super(httpParams, httpsParams);
 	}
-	
+
 	/**
 	 * 
 	 * @param httpParams
@@ -34,7 +33,8 @@ public class EmayHttpsRequestKV extends EmayHttpRequest<Map<String, String>> {
 	 *            https参数
 	 */
 	public EmayHttpsRequestKV(EmayHttpRequestParams<Map<String, String>> httpParams) {
-		super(httpParams, null, new EmayHttpRequestPraserKV());
+		super(httpParams, null);
 	}
 
+	
 }

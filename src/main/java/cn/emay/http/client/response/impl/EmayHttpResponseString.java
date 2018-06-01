@@ -29,9 +29,8 @@ public class EmayHttpResponseString extends EmayHttpResponse<String> {
 	 * @param result
 	 *            http响应数据
 	 */
-	public EmayHttpResponseString(EmayHttpResultCode resultCode, int httpCode, Map<String, String> headers, List<String> cookies, String charSet, String result) {
-		super(resultCode, httpCode, headers, cookies, charSet, result);
+	public EmayHttpResponseString(EmayHttpResultCode resultCode, int httpCode, Map<String, String> headers, List<String> cookies, String charSet, String result, Throwable throwable) {
+		super(resultCode, httpCode, headers, cookies, charSet, result, throwable);
 	}
-
 
 }

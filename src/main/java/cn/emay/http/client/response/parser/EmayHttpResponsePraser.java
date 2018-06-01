@@ -33,6 +33,6 @@ public interface EmayHttpResponsePraser<T> {
 	 * @param result
 	 *            http响应数据
 	 */
-	public T prase(EmayHttpResultCode resultCode, int httpCode, Map<String, String> headers, List<String> cookies, String charSet, ByteArrayOutputStream outputStream);
+	public T prase(EmayHttpResultCode resultCode, int httpCode, Map<String, String> headers, List<String> cookies, String charSet, ByteArrayOutputStream outputStream, Throwable throwable);
 
 }

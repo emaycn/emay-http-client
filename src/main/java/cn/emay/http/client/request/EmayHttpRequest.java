@@ -2,7 +2,6 @@ package cn.emay.http.client.request;
 
 import cn.emay.http.client.request.params.EmayHttpRequestParams;
 import cn.emay.http.client.request.params.EmayHttpsRequestParams;
-import cn.emay.http.client.request.parser.EmayHttpRequestPraser;
 
 /**
  * Http 请求实体<请求数据类型>
@@ -11,7 +10,7 @@ import cn.emay.http.client.request.parser.EmayHttpRequestPraser;
  *
  * @param <T>
  */
-public class EmayHttpRequest<T> {
+public abstract class EmayHttpRequest<T> {
 
 	/**
 	 * http参数
@@ -22,11 +21,6 @@ public class EmayHttpRequest<T> {
 	 * https参数
 	 */
 	private EmayHttpsRequestParams httpsParams;
-
-	/**
-	 * 内容解析器
-	 */
-	private EmayHttpRequestPraser<T> contentPraser;
 
 	/**
 	 * 是否https请求
@@ -47,9 +41,8 @@ public class EmayHttpRequest<T> {
 	 * @param contentPraser
 	 *            内容解析器
 	 */
-	protected EmayHttpRequest(EmayHttpRequestParams<T> httpParams, EmayHttpRequestPraser<T> contentPraser) {
+	protected EmayHttpRequest(EmayHttpRequestParams<T> httpParams) {
 		this.httpParams = httpParams;
-		this.contentPraser = contentPraser;
 		isHttps = false;
 	}
 
@@ -62,13 +55,16 @@ public class EmayHttpRequest<T> {
 	 * @param contentPraser
 	 *            内容解析器
 	 */
-	protected EmayHttpRequest(EmayHttpRequestParams<T> httpParams, EmayHttpsRequestParams httpsParams, EmayHttpRequestPraser<T> contentPraser) {
+	protected EmayHttpRequest(EmayHttpRequestParams<T> httpParams, EmayHttpsRequestParams httpsParams) {
 		this.httpParams = httpParams;
 		this.httpsParams = httpsParams;
-		this.contentPraser = contentPraser;
 		isHttps = true;
 	}
-
+	
+	/**
+	 * 是否https
+	 * @return
+	 */
 	public boolean isHttps() {
 		return isHttps;
 	}
@@ -87,14 +83,6 @@ public class EmayHttpRequest<T> {
 
 	public void setHttpsParams(EmayHttpsRequestParams httpsParams) {
 		this.httpsParams = httpsParams;
-	}
-
-	public EmayHttpRequestPraser<T> getContentPraser() {
-		return contentPraser;
-	}
-
-	public void setContentPraser(EmayHttpRequestPraser<T> contentPraser) {
-		this.contentPraser = contentPraser;
 	}
 
 }

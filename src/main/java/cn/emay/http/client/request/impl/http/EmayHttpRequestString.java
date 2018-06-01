@@ -2,7 +2,6 @@ package cn.emay.http.client.request.impl.http;
 
 import cn.emay.http.client.request.EmayHttpRequest;
 import cn.emay.http.client.request.params.EmayHttpRequestParams;
-import cn.emay.http.client.request.parser.impl.EmayHttpRequestPraserString;
 
 /**
  * Http 请求实体<String>
@@ -18,7 +17,7 @@ public class EmayHttpRequestString extends EmayHttpRequest<String> {
 	 *            请求参数
 	 */
 	public EmayHttpRequestString(EmayHttpRequestParams<String> httpParams) {
-		super(httpParams, new EmayHttpRequestPraserString());
+		super(httpParams);
 	}
 
 }

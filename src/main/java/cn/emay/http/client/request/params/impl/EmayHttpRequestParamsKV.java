@@ -1,11 +1,10 @@
-package cn.emay.http.client.request.parser.impl;
+package cn.emay.http.client.request.params.impl;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import cn.emay.http.client.request.params.EmayHttpRequestParams;
-import cn.emay.http.client.request.parser.EmayHttpRequestPraser;
 
 /**
  * Http 请求解析器：Map<String, String>
@@ -13,7 +12,7 @@ import cn.emay.http.client.request.parser.EmayHttpRequestPraser;
  * @author Frank
  *
  */
-public class EmayHttpRequestPraserKV implements EmayHttpRequestPraser<Map<String, String>> {
+public class EmayHttpRequestParamsKV extends EmayHttpRequestParams<Map<String, String>> {
 
 	/**
 	 * 请求内容byte数组
@@ -26,12 +25,12 @@ public class EmayHttpRequestPraserKV implements EmayHttpRequestPraser<Map<String
 	private String contentString;
 
 	@Override
-	public String praseRqeuestContentToString(EmayHttpRequestParams<Map<String, String>> httpParams) {
+	public String paramsToString() {
 		if (contentString != null) {
 			return contentString;
 		}
-		Map<String, String> params = httpParams.getParams();
-		if (params == null || params.size() == 0) {
+		Map<String, String> params = getParams();
+		if (params == null || params.isEmpty()) {
 			return null;
 		}
 		StringBuffer buffer = new StringBuffer();
@@ -46,25 +45,25 @@ public class EmayHttpRequestPraserKV implements EmayHttpRequestPraser<Map<String
 	}
 
 	@Override
-	public byte[] praseRqeuestContentToBytes(EmayHttpRequestParams<Map<String, String>> httpParams) {
+	public byte[] paramsToBytes() {
 		if (contentBytes != null) {
 			return contentBytes;
 		}
-		String paramStr = praseRqeuestContentToString(httpParams);
+		String paramStr = paramsToString();
 		if (paramStr == null) {
 			return null;
 		}
 		try {
-			contentBytes = paramStr.getBytes(httpParams.getCharSet());
+			contentBytes = paramStr.getBytes(getCharSet());
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+			throw new IllegalArgumentException(e);
 		}
 		return contentBytes;
 	}
 
 	@Override
-	public int praseRqeuestContentLength(EmayHttpRequestParams<Map<String, String>> httpParams) {
-		praseRqeuestContentToBytes(httpParams);
+	public int paramsLength() {
+		paramsToBytes();
 		if (contentBytes != null) {
 			return contentBytes.length;
 		} else {

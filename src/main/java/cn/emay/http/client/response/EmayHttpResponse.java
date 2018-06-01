@@ -32,14 +32,25 @@ public class EmayHttpResponse<T> {
 	 * http响应Cookies
 	 */
 	private List<String> cookies;
+
 	/**
 	 * http字符集
 	 */
 	private String charSet;
+
 	/**
 	 * http响应数据
 	 */
 	private T result;
+
+	/**
+	 * 异常
+	 */
+	private Throwable throwable;
+
+	public EmayHttpResponse() {
+
+	}
 
 	/**
 	 * 
@@ -55,14 +66,17 @@ public class EmayHttpResponse<T> {
 	 *            http字符集
 	 * @param result
 	 *            http响应数据
+	 * @param throwable
+	 *            异常
 	 */
-	public EmayHttpResponse(EmayHttpResultCode resultCode, int httpCode, Map<String, String> headers, List<String> cookies, String charSet, T result) {
+	public EmayHttpResponse(EmayHttpResultCode resultCode, int httpCode, Map<String, String> headers, List<String> cookies, String charSet, T result, Throwable throwable) {
 		this.resultCode = resultCode;
 		this.httpCode = httpCode;
 		this.headers = headers;
 		this.cookies = cookies;
 		this.charSet = charSet;
 		this.result = result;
+		this.throwable = throwable;
 	}
 
 	public EmayHttpResultCode getResultCode() {
@@ -111,6 +125,14 @@ public class EmayHttpResponse<T> {
 
 	public void setResult(T result) {
 		this.result = result;
+	}
+
+	public Throwable getThrowable() {
+		return throwable;
+	}
+
+	public void setThrowable(Throwable throwable) {
+		this.throwable = throwable;
 	}
 
 }

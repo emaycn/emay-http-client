@@ -17,8 +17,9 @@ import cn.emay.http.client.response.parser.EmayHttpResponsePraser;
 public class EmayHttpResponseBytesPraser implements EmayHttpResponsePraser<EmayHttpResponseBytes> {
 
 	@Override
-	public EmayHttpResponseBytes prase(EmayHttpResultCode resultCode, int httpCode, Map<String, String> headers, List<String> cookies, String charSet, ByteArrayOutputStream outputStream) {
-		return new EmayHttpResponseBytes(resultCode, httpCode, headers, cookies, charSet, outputStream == null ? null : outputStream.toByteArray());
+	public EmayHttpResponseBytes prase(EmayHttpResultCode resultCode, int httpCode, Map<String, String> headers, List<String> cookies, String charSet, ByteArrayOutputStream outputStream,
+			Throwable throwable) {
+		return new EmayHttpResponseBytes(resultCode, httpCode, headers, cookies, charSet, outputStream == null ? null : outputStream.toByteArray(), throwable);
 	}
 
 }
