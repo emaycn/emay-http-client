@@ -36,5 +36,4 @@ public class EmayHttpsRequestKV extends EmayHttpRequest<Map<String, String>> {
 		super(httpParams, null);
 	}
 
-	
 }

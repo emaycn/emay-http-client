@@ -12,7 +12,6 @@ import cn.emay.http.client.request.params.EmayHttpsRequestParams;
  */
 public class EmayHttpsRequestString extends EmayHttpRequest<String> {
 
-	
 	/**
 	 * 
 	 * @param httpParams

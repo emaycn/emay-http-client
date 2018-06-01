@@ -133,7 +133,7 @@ public class EmayHttpClient {
 		} catch (CertificateException e) {
 			code = EmayHttpResultCode.ERROR_HTTPS_SSL;
 			exp = e;
-		}  catch (Throwable e) {
+		} catch (Throwable e) {
 			code = EmayHttpResultCode.ERROR_OTHER;
 			exp = e;
 		} finally {

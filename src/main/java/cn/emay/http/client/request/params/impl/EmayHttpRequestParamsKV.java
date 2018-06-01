@@ -13,7 +13,6 @@ import cn.emay.http.client.request.params.EmayHttpRequestParams;
  *
  */
 public class EmayHttpRequestParamsKV extends EmayHttpRequestParams<Map<String, String>> {
-	
 
 	/**
 	 * 

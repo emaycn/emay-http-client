@@ -37,10 +37,10 @@ public class EmayHttpRequestParamsBytes extends EmayHttpRequestParams<byte[]> {
 	 * @param params
 	 *            传输数据
 	 */
-	public EmayHttpRequestParamsBytes(String url, String charSet, String method, Map<String, String> headers, Map<String, String> cookies,byte[] params) {
+	public EmayHttpRequestParamsBytes(String url, String charSet, String method, Map<String, String> headers, Map<String, String> cookies, byte[] params) {
 		super(url, charSet, method, headers, cookies, params);
 	}
-	
+
 	/**
 	 * 请求内容字符串
 	 */

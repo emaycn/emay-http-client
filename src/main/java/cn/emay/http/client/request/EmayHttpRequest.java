@@ -60,9 +60,10 @@ public class EmayHttpRequest<T> {
 		this.httpsParams = httpsParams;
 		isHttps = true;
 	}
-	
+
 	/**
 	 * 是否https
+	 * 
 	 * @return
 	 */
 	public boolean isHttps() {

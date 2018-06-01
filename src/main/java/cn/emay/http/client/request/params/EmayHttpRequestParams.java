@@ -81,7 +81,7 @@ public abstract class EmayHttpRequestParams<T> {
 	 * @return
 	 */
 	public abstract int paramsLength();
-	
+
 	public String getUrl() {
 		return url;
 	}
