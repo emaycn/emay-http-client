@@ -33,10 +33,10 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
-import cn.emay.http.client.common.HttpResultCode;
-import cn.emay.http.client.request.HttpRequest;
-import cn.emay.http.client.request.params.HttpsParams;
-import cn.emay.http.client.response.parser.HttpResponsePraser;
+import cn.emay.http.client.common.EmayHttpResultCode;
+import cn.emay.http.client.request.EmayHttpRequest;
+import cn.emay.http.client.request.params.EmayHttpsRequestParams;
+import cn.emay.http.client.response.parser.EmayHttpResponsePraser;
 
 /**
  * EMAY http客户端
@@ -44,7 +44,7 @@ import cn.emay.http.client.response.parser.HttpResponsePraser;
  * @author Frank
  *
  */
-public class HttpClient {
+public class EmayHttpClient {
 
 	/**
 	 * 链接超时时间(s)
@@ -55,8 +55,10 @@ public class HttpClient {
 	 * 数据传输超时时间(s)
 	 */
 	private int httpReadTimeOut = 30;
+	
+	private boolean debug = false;
 
-	public HttpClient() {
+	public EmayHttpClient() {
 
 	}
 
@@ -67,9 +69,10 @@ public class HttpClient {
 	 * @param httpReadTimeOut
 	 *            数据传输超时时间(s)
 	 */
-	public HttpClient(int httpConnectionTimeOut, int httpReadTimeOut) {
+	public EmayHttpClient(int httpConnectionTimeOut, int httpReadTimeOut,boolean debug) {
 		this.httpConnectionTimeOut = httpConnectionTimeOut;
 		this.httpReadTimeOut = httpReadTimeOut;
+		this.debug = debug;
 	}
 
 	/**
@@ -81,10 +84,10 @@ public class HttpClient {
 	 *            响应解析器
 	 * @return T 响应
 	 */
-	public <T> T service(HttpRequest<?> request, HttpResponsePraser<T> praser) {
-		HttpResultCode code = HttpResultCode.SUCCESS;
+	public <T> T service(EmayHttpRequest<?> request, EmayHttpResponsePraser<T> praser) {
+		EmayHttpResultCode code = EmayHttpResultCode.SUCCESS;
 		if (request.getHttpParams().getUrl() == null || request.getHttpParams().getUrl().length() == 0) {
-			code = HttpResultCode.ERROR_URL_NULL;
+			code = EmayHttpResultCode.ERROR_URL;
 			return praser.prase(code, 0, null, null, request.getHttpParams().getCharSet(), null);
 		}
 		HttpURLConnection conn = null;
@@ -92,6 +95,7 @@ public class HttpClient {
 		Map<String, String> headers = null;
 		List<String> cookies = null;
 		ByteArrayOutputStream outputStream = null;
+		Exception exp = null;
 		try {
 			String realUrl = this.genUrl(request);
 			conn = this.createConnection(request, realUrl);
@@ -102,60 +106,66 @@ public class HttpClient {
 			cookies = this.getCookies(conn, request.getHttpParams().getCharSet());
 			outputStream = this.getResultOutputStream(conn);
 		} catch (SocketTimeoutException e) {
-			code = HttpResultCode.ERROR_TIMEOUT;
-			e.printStackTrace();
+			code = EmayHttpResultCode.ERROR_TIMEOUT;
+			exp = e;
 		} catch (KeyManagementException e) {
-			code = HttpResultCode.ERROR_HTTPS_SSL;
-			e.printStackTrace();
+			code = EmayHttpResultCode.ERROR_HTTPS_SSL;
+			exp = e;
 		} catch (NoSuchAlgorithmException e) {
-			code = HttpResultCode.ERROR_HTTPS_SSL;
-			e.printStackTrace();
+			code = EmayHttpResultCode.ERROR_HTTPS_SSL;
+			exp = e;
 		} catch (ProtocolException e) {
-			code = HttpResultCode.ERROR_METHOD;
-			e.printStackTrace();
+			code = EmayHttpResultCode.ERROR_METHOD;
+			exp = e;
 		} catch (UnsupportedEncodingException e) {
-			code = HttpResultCode.ERROR_CHARSET;
-			e.printStackTrace();
+			code = EmayHttpResultCode.ERROR_CHARSET;
+			exp = e;
 		} catch (MalformedURLException e) {
-			code = HttpResultCode.ERROR_URL;
+			code = EmayHttpResultCode.ERROR_URL;
 			httpCode = 500;
-			e.printStackTrace();
+			exp = e;
 		} catch (IOException e) {
-			code = HttpResultCode.ERROR_CONNECT;
-			e.printStackTrace();
+			code = EmayHttpResultCode.ERROR_CONNECT;
+			exp = e;
 		} catch (UnrecoverableKeyException e) {
-			code = HttpResultCode.ERROR_HTTPS_SSL;
-			e.printStackTrace();
+			code = EmayHttpResultCode.ERROR_HTTPS_SSL;
+			exp = e;
 		} catch (KeyStoreException e) {
-			code = HttpResultCode.ERROR_HTTPS_SSL;
-			e.printStackTrace();
+			code = EmayHttpResultCode.ERROR_HTTPS_SSL;
+			exp = e;
 		} catch (CertificateException e) {
-			code = HttpResultCode.ERROR_HTTPS_SSL;
-			e.printStackTrace();
+			code = EmayHttpResultCode.ERROR_HTTPS_SSL;
+			exp = e;
 		} finally {
 			if (conn != null) {
 				conn.disconnect();
 			}
 		}
+		if(debug && exp != null) {
+			exp.printStackTrace();
+		}
 		T t = null;
 		try {
 			t = praser.prase(code, httpCode, headers, cookies, request.getHttpParams().getCharSet(), outputStream);
 		} catch (Exception e) {
-			e.printStackTrace();
+			exp = e;
 		} finally {
 			if (outputStream != null) {
 				try {
 					outputStream.flush();
 					outputStream.close();
 				} catch (IOException e) {
-					e.printStackTrace();
+					exp = e;
 				}
 			}
+		}
+		if(debug && exp != null) {
+			exp.printStackTrace();
 		}
 		return t;
 	}
 
-	private <T> String genUrl(HttpRequest<T> request) {
+	private <T> String genUrl(EmayHttpRequest<T> request) {
 		if (request.getHttpParams().getMethod().equalsIgnoreCase("GET")) {
 			String getprams = request.getContentPraser().praseRqeuestContentToString(request.getHttpParams());
 			if (getprams != null) {
@@ -260,7 +270,7 @@ public class HttpClient {
 	 * @param request
 	 * @throws IOException
 	 */
-	private <T> void request(HttpURLConnection conn, HttpRequest<T> request) throws IOException {
+	private <T> void request(HttpURLConnection conn, EmayHttpRequest<T> request) throws IOException {
 		if (request.getHttpParams().getMethod().equalsIgnoreCase("POST")) {
 			conn.setDoOutput(true);
 			// conn.connect();
@@ -284,7 +294,7 @@ public class HttpClient {
 	 * @param request
 	 * @throws ProtocolException
 	 */
-	private void fillConnection(HttpURLConnection conn, HttpRequest<?> request) throws ProtocolException {
+	private void fillConnection(HttpURLConnection conn, EmayHttpRequest<?> request) throws ProtocolException {
 		this.fillTimeout(conn);
 		this.filleMethod(conn, request);
 		this.fillHeaders(conn, request);
@@ -312,7 +322,7 @@ public class HttpClient {
 	 * @param request
 	 * @throws ProtocolException
 	 */
-	private void filleMethod(HttpURLConnection conn, HttpRequest<?> request) throws ProtocolException {
+	private void filleMethod(HttpURLConnection conn, EmayHttpRequest<?> request) throws ProtocolException {
 		conn.setRequestMethod(request.getHttpParams().getMethod().toUpperCase());
 	}
 
@@ -322,7 +332,7 @@ public class HttpClient {
 	 * @param conn
 	 * @param request
 	 */
-	private void fillHeaders(HttpURLConnection conn, HttpRequest<?> request) {
+	private void fillHeaders(HttpURLConnection conn, EmayHttpRequest<?> request) {
 		if (request.getHttpParams().getHeaders() != null) {
 			for (Map.Entry<String, String> entry : request.getHttpParams().getHeaders().entrySet()) {
 				fillHeader(conn, entry.getKey(), entry.getValue());
@@ -346,7 +356,7 @@ public class HttpClient {
 	 * @param conn
 	 * @param request
 	 */
-	private void fillCookies(HttpURLConnection conn, HttpRequest<?> request) {
+	private void fillCookies(HttpURLConnection conn, EmayHttpRequest<?> request) {
 		if (request.getHttpParams().getCookies() != null) {
 			conn.setRequestProperty("Cookie", request.getHttpParams().getCookies());
 		}
@@ -365,7 +375,7 @@ public class HttpClient {
 	 * @throws KeyStoreException
 	 * @throws UnrecoverableKeyException
 	 */
-	private HttpURLConnection createConnection(HttpRequest<?> request, String realUrl)
+	private HttpURLConnection createConnection(EmayHttpRequest<?> request, String realUrl)
 			throws NoSuchAlgorithmException, KeyManagementException, MalformedURLException, IOException, UnrecoverableKeyException, KeyStoreException, CertificateException {
 		URL console = new URL(realUrl);
 		HttpURLConnection conn;
@@ -377,7 +387,7 @@ public class HttpClient {
 		return conn;
 	}
 
-	private HttpURLConnection genHttpsConn(URL console, HttpRequest<?> request)
+	private HttpURLConnection genHttpsConn(URL console, EmayHttpRequest<?> request)
 			throws UnrecoverableKeyException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException, CertificateException, IOException {
 		SSLContext ctx = getSSLContext(request.getHttpsParams());
 		HttpsURLConnection sconn = (HttpsURLConnection) console.openConnection();
@@ -404,7 +414,7 @@ public class HttpClient {
 	 * @throws NoSuchAlgorithmException
 	 * @throws Exception
 	 */
-	private KeyStore getKeyStore(HttpsParams params) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
+	private KeyStore getKeyStore(EmayHttpsRequestParams params) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
 		// 实例化密钥库 KeyStore用于存放证书，创建对象时 指定交换数字证书的加密标准
 		// 指定交换数字证书的加密标准
 		KeyStore ks = KeyStore.getInstance(params.getAlgorithm());
@@ -435,7 +445,7 @@ public class HttpClient {
 	 * @throws KeyManagementException
 	 * @throws Exception
 	 */
-	private SSLContext getSSLContext(HttpsParams params) throws NoSuchAlgorithmException, KeyStoreException, CertificateException, IOException, UnrecoverableKeyException, KeyManagementException {
+	private SSLContext getSSLContext(EmayHttpsRequestParams params) throws NoSuchAlgorithmException, KeyStoreException, CertificateException, IOException, UnrecoverableKeyException, KeyManagementException {
 		// 实例化SSL上下文
 		SSLContext ctx = SSLContext.getInstance("TLS");
 		if (params != null) {

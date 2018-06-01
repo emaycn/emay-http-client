@@ -2,8 +2,8 @@ package cn.emay.http.client.request.parser.impl;
 
 import java.io.UnsupportedEncodingException;
 
-import cn.emay.http.client.request.params.HttpRequestParams;
-import cn.emay.http.client.request.parser.HttpRequestPraser;
+import cn.emay.http.client.request.params.EmayHttpRequestParams;
+import cn.emay.http.client.request.parser.EmayHttpRequestPraser;
 
 /**
  * Http 请求解析器：String
@@ -11,7 +11,7 @@ import cn.emay.http.client.request.parser.HttpRequestPraser;
  * @author Frank
  *
  */
-public class HttpRequestPraserString implements HttpRequestPraser<String> {
+public class EmayHttpRequestPraserString implements EmayHttpRequestPraser<String> {
 
 	/**
 	 * 请求内容byte数组
@@ -19,12 +19,12 @@ public class HttpRequestPraserString implements HttpRequestPraser<String> {
 	private byte[] contentBytes;
 
 	@Override
-	public String praseRqeuestContentToString(HttpRequestParams<String> httpParams) {
+	public String praseRqeuestContentToString(EmayHttpRequestParams<String> httpParams) {
 		return httpParams.getParams();
 	}
 
 	@Override
-	public byte[] praseRqeuestContentToBytes(HttpRequestParams<String> httpParams) {
+	public byte[] praseRqeuestContentToBytes(EmayHttpRequestParams<String> httpParams) {
 		if (contentBytes != null) {
 			return contentBytes;
 		}
@@ -38,7 +38,7 @@ public class HttpRequestPraserString implements HttpRequestPraser<String> {
 	}
 
 	@Override
-	public int praseRqeuestContentLength(HttpRequestParams<String> httpParams) {
+	public int praseRqeuestContentLength(EmayHttpRequestParams<String> httpParams) {
 		praseRqeuestContentToBytes(httpParams);
 		if (contentBytes != null) {
 			return contentBytes.length;

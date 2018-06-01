@@ -3,16 +3,16 @@ package cn.emay.http.client.response.impl;
 import java.util.List;
 import java.util.Map;
 
-import cn.emay.http.client.common.HttpResultCode;
-import cn.emay.http.client.response.HttpResponse;
+import cn.emay.http.client.common.EmayHttpResultCode;
+import cn.emay.http.client.response.EmayHttpResponse;
 
 /**
- * http 响应: String
+ * http 响应: byte[]
  * 
  * @author Frank
  *
  */
-public class HttpResponseString extends HttpResponse<String> {
+public class EmayHttpResponseBytes extends EmayHttpResponse<byte[]> {
 
 	/**
 	 * 
@@ -29,9 +29,8 @@ public class HttpResponseString extends HttpResponse<String> {
 	 * @param result
 	 *            http响应数据
 	 */
-	public HttpResponseString(HttpResultCode resultCode, int httpCode, Map<String, String> headers, List<String> cookies, String charSet, String result) {
+	public EmayHttpResponseBytes(EmayHttpResultCode resultCode, int httpCode, Map<String, String> headers, List<String> cookies, String charSet, byte[] result) {
 		super(resultCode, httpCode, headers, cookies, charSet, result);
 	}
-
 
 }

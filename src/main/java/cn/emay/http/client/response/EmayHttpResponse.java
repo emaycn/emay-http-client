@@ -3,7 +3,7 @@ package cn.emay.http.client.response;
 import java.util.List;
 import java.util.Map;
 
-import cn.emay.http.client.common.HttpResultCode;
+import cn.emay.http.client.common.EmayHttpResultCode;
 
 /**
  * Http响应
@@ -11,12 +11,12 @@ import cn.emay.http.client.common.HttpResultCode;
  * @author Frank
  *
  */
-public class HttpResponse<T> {
+public class EmayHttpResponse<T> {
 
 	/**
 	 * Http 结果代码
 	 */
-	private HttpResultCode resultCode;
+	private EmayHttpResultCode resultCode;
 
 	/**
 	 * Http链接Code
@@ -56,7 +56,7 @@ public class HttpResponse<T> {
 	 * @param result
 	 *            http响应数据
 	 */
-	public HttpResponse(HttpResultCode resultCode, int httpCode, Map<String, String> headers, List<String> cookies, String charSet, T result) {
+	public EmayHttpResponse(EmayHttpResultCode resultCode, int httpCode, Map<String, String> headers, List<String> cookies, String charSet, T result) {
 		this.resultCode = resultCode;
 		this.httpCode = httpCode;
 		this.headers = headers;
@@ -65,11 +65,11 @@ public class HttpResponse<T> {
 		this.result = result;
 	}
 
-	public HttpResultCode getResultCode() {
+	public EmayHttpResultCode getResultCode() {
 		return resultCode;
 	}
 
-	public void setResultCode(HttpResultCode resultCode) {
+	public void setResultCode(EmayHttpResultCode resultCode) {
 		this.resultCode = resultCode;
 	}
 

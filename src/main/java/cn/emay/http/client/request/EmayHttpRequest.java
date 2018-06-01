@@ -1,8 +1,8 @@
 package cn.emay.http.client.request;
 
-import cn.emay.http.client.request.params.HttpRequestParams;
-import cn.emay.http.client.request.params.HttpsParams;
-import cn.emay.http.client.request.parser.HttpRequestPraser;
+import cn.emay.http.client.request.params.EmayHttpRequestParams;
+import cn.emay.http.client.request.params.EmayHttpsRequestParams;
+import cn.emay.http.client.request.parser.EmayHttpRequestPraser;
 
 /**
  * Http 请求实体<请求数据类型>
@@ -11,22 +11,22 @@ import cn.emay.http.client.request.parser.HttpRequestPraser;
  *
  * @param <T>
  */
-public class HttpRequest<T> {
+public class EmayHttpRequest<T> {
 
 	/**
 	 * http参数
 	 */
-	private HttpRequestParams<T> httpParams;
+	private EmayHttpRequestParams<T> httpParams;
 
 	/**
 	 * https参数
 	 */
-	private HttpsParams httpsParams;
+	private EmayHttpsRequestParams httpsParams;
 
 	/**
 	 * 内容解析器
 	 */
-	private HttpRequestPraser<T> contentPraser;
+	private EmayHttpRequestPraser<T> contentPraser;
 
 	/**
 	 * 是否https请求
@@ -36,7 +36,7 @@ public class HttpRequest<T> {
 	/**
 	 * 
 	 */
-	protected HttpRequest() {
+	protected EmayHttpRequest() {
 
 	}
 
@@ -47,7 +47,7 @@ public class HttpRequest<T> {
 	 * @param contentPraser
 	 *            内容解析器
 	 */
-	protected HttpRequest(HttpRequestParams<T> httpParams, HttpRequestPraser<T> contentPraser) {
+	protected EmayHttpRequest(EmayHttpRequestParams<T> httpParams, EmayHttpRequestPraser<T> contentPraser) {
 		this.httpParams = httpParams;
 		this.contentPraser = contentPraser;
 		isHttps = false;
@@ -62,7 +62,7 @@ public class HttpRequest<T> {
 	 * @param contentPraser
 	 *            内容解析器
 	 */
-	protected HttpRequest(HttpRequestParams<T> httpParams, HttpsParams httpsParams, HttpRequestPraser<T> contentPraser) {
+	protected EmayHttpRequest(EmayHttpRequestParams<T> httpParams, EmayHttpsRequestParams httpsParams, EmayHttpRequestPraser<T> contentPraser) {
 		this.httpParams = httpParams;
 		this.httpsParams = httpsParams;
 		this.contentPraser = contentPraser;
@@ -73,27 +73,27 @@ public class HttpRequest<T> {
 		return isHttps;
 	}
 
-	public HttpRequestParams<T> getHttpParams() {
+	public EmayHttpRequestParams<T> getHttpParams() {
 		return httpParams;
 	}
 
-	public void setHttpParams(HttpRequestParams<T> httpParams) {
+	public void setHttpParams(EmayHttpRequestParams<T> httpParams) {
 		this.httpParams = httpParams;
 	}
 
-	public HttpsParams getHttpsParams() {
+	public EmayHttpsRequestParams getHttpsParams() {
 		return httpsParams;
 	}
 
-	public void setHttpsParams(HttpsParams httpsParams) {
+	public void setHttpsParams(EmayHttpsRequestParams httpsParams) {
 		this.httpsParams = httpsParams;
 	}
 
-	public HttpRequestPraser<T> getContentPraser() {
+	public EmayHttpRequestPraser<T> getContentPraser() {
 		return contentPraser;
 	}
 
-	public void setContentPraser(HttpRequestPraser<T> contentPraser) {
+	public void setContentPraser(EmayHttpRequestPraser<T> contentPraser) {
 		this.contentPraser = contentPraser;
 	}
 

@@ -4,7 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.List;
 import java.util.Map;
 
-import cn.emay.http.client.common.HttpResultCode;
+import cn.emay.http.client.common.EmayHttpResultCode;
 
 /**
  * 
@@ -15,7 +15,7 @@ import cn.emay.http.client.common.HttpResultCode;
  * @param <T>
  *            http响应数据转换后实体
  */
-public interface HttpResponsePraser<T> {
+public interface EmayHttpResponsePraser<T> {
 
 	/**
 	 * 解析
@@ -33,6 +33,6 @@ public interface HttpResponsePraser<T> {
 	 * @param result
 	 *            http响应数据
 	 */
-	public T prase(HttpResultCode resultCode, int httpCode, Map<String, String> headers, List<String> cookies, String charSet, ByteArrayOutputStream outputStream);
+	public T prase(EmayHttpResultCode resultCode, int httpCode, Map<String, String> headers, List<String> cookies, String charSet, ByteArrayOutputStream outputStream);
 
 }
