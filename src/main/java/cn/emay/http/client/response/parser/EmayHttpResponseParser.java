@@ -15,7 +15,7 @@ import cn.emay.http.client.common.EmayHttpResultCode;
  * @param <T>
  *            http响应数据转换后实体
  */
-public interface EmayHttpResponsePraser<T> {
+public interface EmayHttpResponseParser<T> {
 
 	/**
 	 * 解析
@@ -33,6 +33,6 @@ public interface EmayHttpResponsePraser<T> {
 	 * @param result
 	 *            http响应数据
 	 */
-	public T prase(EmayHttpResultCode resultCode, int httpCode, Map<String, String> headers, List<String> cookies, String charSet, ByteArrayOutputStream outputStream, Throwable throwable);
+	public T parse(EmayHttpResultCode resultCode, int httpCode, Map<String, String> headers, List<String> cookies, String charSet, ByteArrayOutputStream outputStream, Throwable throwable);
 
 }

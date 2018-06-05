@@ -7,7 +7,7 @@ import java.util.Map;
 
 import cn.emay.http.client.common.EmayHttpResultCode;
 import cn.emay.http.client.response.impl.EmayHttpResponseString;
-import cn.emay.http.client.response.parser.EmayHttpResponsePraser;
+import cn.emay.http.client.response.parser.EmayHttpResponseParser;
 
 /**
  * 解析String响应的解析器
@@ -15,10 +15,10 @@ import cn.emay.http.client.response.parser.EmayHttpResponsePraser;
  * @author Frank
  *
  */
-public class EmayHttpResponseStringPraser implements EmayHttpResponsePraser<EmayHttpResponseString> {
+public class EmayHttpResponseStringParser implements EmayHttpResponseParser<EmayHttpResponseString> {
 
 	@Override
-	public EmayHttpResponseString prase(EmayHttpResultCode resultCode, int httpCode, Map<String, String> headers, List<String> cookies, String charSet, ByteArrayOutputStream outputStream,
+	public EmayHttpResponseString parse(EmayHttpResultCode resultCode, int httpCode, Map<String, String> headers, List<String> cookies, String charSet, ByteArrayOutputStream outputStream,
 			Throwable throwable) {
 		String st = null;
 		try {

@@ -38,8 +38,6 @@ public class EmayHttpRequest<T> {
 	 * 
 	 * @param httpParams
 	 *            http参数
-	 * @param contentPraser
-	 *            内容解析器
 	 */
 	public EmayHttpRequest(EmayHttpRequestParams<T> httpParams) {
 		this.httpParams = httpParams;
@@ -52,8 +50,6 @@ public class EmayHttpRequest<T> {
 	 *            http参数
 	 * @param httpsParams
 	 *            https参数
-	 * @param contentPraser
-	 *            内容解析器
 	 */
 	public EmayHttpRequest(EmayHttpRequestParams<T> httpParams, EmayHttpsRequestParams httpsParams) {
 		this.httpParams = httpParams;

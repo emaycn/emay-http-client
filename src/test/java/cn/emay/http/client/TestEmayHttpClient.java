@@ -5,7 +5,7 @@ import org.junit.Test;
 import cn.emay.http.client.request.impl.http.EmayHttpRequestKV;
 import cn.emay.http.client.request.params.impl.EmayHttpRequestParamsKV;
 import cn.emay.http.client.response.impl.EmayHttpResponseString;
-import cn.emay.http.client.response.parser.impl.EmayHttpResponseStringPraser;
+import cn.emay.http.client.response.parser.impl.EmayHttpResponseStringParser;
 
 public class TestEmayHttpClient {
 
@@ -13,7 +13,7 @@ public class TestEmayHttpClient {
 	public void testClient() {
 
 		EmayHttpClient client = new EmayHttpClient();
-		EmayHttpResponseString string = client.service(new EmayHttpRequestKV(new EmayHttpRequestParamsKV("https://www.baidu.com")), new EmayHttpResponseStringPraser());
+		EmayHttpResponseString string = client.service(new EmayHttpRequestKV(new EmayHttpRequestParamsKV("https://www.baidu.com")), new EmayHttpResponseStringParser());
 		System.out.println("getHttpCode\t" + string.getHttpCode());
 		System.out.println("getResult\t" + string.getResult());
 		System.out.println("getCookies\t" + string.getCookies());

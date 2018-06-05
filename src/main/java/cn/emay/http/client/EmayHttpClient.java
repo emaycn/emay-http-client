@@ -36,7 +36,7 @@ import javax.net.ssl.X509TrustManager;
 import cn.emay.http.client.common.EmayHttpResultCode;
 import cn.emay.http.client.request.EmayHttpRequest;
 import cn.emay.http.client.request.params.EmayHttpsRequestParams;
-import cn.emay.http.client.response.parser.EmayHttpResponsePraser;
+import cn.emay.http.client.response.parser.EmayHttpResponseParser;
 
 /**
  * EMAY http客户端
@@ -77,15 +77,15 @@ public class EmayHttpClient {
 	 * 
 	 * @param request
 	 *            请求
-	 * @param praser
+	 * @param parser
 	 *            响应解析器
 	 * @return T 响应
 	 */
-	public <T> T service(EmayHttpRequest<?> request, EmayHttpResponsePraser<T> praser) {
+	public <T> T service(EmayHttpRequest<?> request, EmayHttpResponseParser<T> parser) {
 		EmayHttpResultCode code = EmayHttpResultCode.SUCCESS;
 		if (request.getHttpParams().getUrl() == null || request.getHttpParams().getUrl().length() == 0) {
 			code = EmayHttpResultCode.ERROR_URL;
-			return praser.prase(code, 0, null, null, request.getHttpParams().getCharSet(), null, null);
+			return parser.parse(code, 0, null, null, request.getHttpParams().getCharSet(), null, null);
 		}
 		HttpURLConnection conn = null;
 		int httpCode = 0;
@@ -143,7 +143,7 @@ public class EmayHttpClient {
 		}
 		T t = null;
 		try {
-			t = praser.prase(code, httpCode, headers, cookies, request.getHttpParams().getCharSet(), outputStream, exp);
+			t = parser.parse(code, httpCode, headers, cookies, request.getHttpParams().getCharSet(), outputStream, exp);
 		} catch (Exception e) {
 			throw new IllegalArgumentException(e);
 		} finally {
