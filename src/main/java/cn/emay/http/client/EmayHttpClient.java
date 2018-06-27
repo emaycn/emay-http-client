@@ -437,14 +437,14 @@ public class EmayHttpClient {
 	 * @throws NoSuchAlgorithmException
 	 * @throws Exception
 	 */
-	private KeyStore getKeyStore(EmayHttpsRequestParams params) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
+	private KeyStore getKeyStore(String password,String algorithm,String sotrePath) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
 		// 实例化密钥库 KeyStore用于存放证书，创建对象时 指定交换数字证书的加密标准
 		// 指定交换数字证书的加密标准
-		KeyStore ks = KeyStore.getInstance(params.getAlgorithm());
+		KeyStore ks = KeyStore.getInstance(algorithm);
 		// 获得密钥库文件流
-		FileInputStream is = new FileInputStream(params.getKeyStorePath());
+		FileInputStream is = new FileInputStream(sotrePath);
 		// 加载密钥库
-		ks.load(is, params.getPassword().toCharArray());
+		ks.load(is, password.toCharArray());
 		// 关闭密钥库文件流
 		is.close();
 		return ks;
@@ -478,11 +478,11 @@ public class EmayHttpClient {
 			// 实例化信任库 TrustManager决定是否信任对方的证书
 			TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
 			// 获得密钥库
-			KeyStore keyStore = getKeyStore(params);
+			KeyStore keyStore = getKeyStore(params.getPassword(),params.getAlgorithm(),params.getKeyStorePath());
 			// 初始化密钥工厂
 			keyManagerFactory.init(keyStore, params.getPassword().toCharArray());
 			// 获得信任库
-			KeyStore trustStore = getKeyStore(params);
+			KeyStore trustStore = getKeyStore(params.getPassword(),params.getAlgorithm(),params.getTrustStorePath());
 			// 初始化信任库
 			trustManagerFactory.init(trustStore);
 			// 初始化SSL上下文
