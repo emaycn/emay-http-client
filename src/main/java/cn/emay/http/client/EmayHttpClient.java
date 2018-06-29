@@ -103,7 +103,7 @@ public class EmayHttpClient {
 		try {
 			String url = genUrl(httpParams, requestData);
 			conn = createConnection(httpsParams, isHttps, isCustomHttps, url);
-			fillConnection(conn, httpParams);
+			fillConnection(conn,isHttps,httpParams);
 			request(conn, httpParams.getCharSet(), httpParams.getMethod(), requestData);
 			httpCode = conn.getResponseCode();
 			headers = this.getHeaders(conn, httpParams.getCharSet());
@@ -144,7 +144,7 @@ public class EmayHttpClient {
 		} catch (Throwable e) {
 			code = EmayHttpResultCode.ERROR_OTHER;
 			exp = e;
-		}  finally {
+		} finally {
 			if (conn != null) {
 				conn.disconnect();
 			}
@@ -222,7 +222,6 @@ public class EmayHttpClient {
 	}
 
 	private void request(HttpURLConnection conn, String charSet, String method, EmayHttpRequestData requestData) throws IOException {
-		// TODO 具体区别
 		if ("POST".equalsIgnoreCase(method) || "PUT".equalsIgnoreCase(method)) {
 			conn.setDoOutput(true);
 			if (requestData == null) {
@@ -245,11 +244,11 @@ public class EmayHttpClient {
 		}
 	}
 
-	private void fillConnection(HttpURLConnection conn, EmayHttpRequestParams httpParams) throws ProtocolException {
+	private void fillConnection(HttpURLConnection conn, boolean isHttps,EmayHttpRequestParams httpParams) throws ProtocolException {
 		this.fillTimeout(conn);
 		this.filleMethod(conn, httpParams.getMethod());
 		this.fillHeaders(conn, httpParams.getHeaders());
-		this.fillCookies(conn, httpParams.getCookies());
+		this.fillCookies(isHttps,conn, httpParams.getCookies());
 	}
 
 	private void fillTimeout(HttpURLConnection conn) {
@@ -278,13 +277,16 @@ public class EmayHttpClient {
 		conn.setRequestProperty(key, value);
 	}
 
-	private void fillCookies(HttpURLConnection conn, List<EmayHttpCookie> cookies) {
+	private void fillCookies(boolean isHttps, HttpURLConnection conn, List<EmayHttpCookie> cookies) {
 		if (cookies == null || cookies.isEmpty()) {
 			return;
 		}
 		StringBuffer buffer = new StringBuffer();
-		for(EmayHttpCookie cookie : cookies) {
-			if(cookie.getName() != null && cookie.getValue() != null) {
+		for (EmayHttpCookie cookie : cookies) {
+			if (cookie.getName() != null && cookie.getValue() != null) {
+				if (cookie.isSecure() && !isHttps) {
+					continue;
+				}
 				buffer.append(cookie.getName()).append("=").append(cookie.getValue()).append(";");
 			}
 		}
@@ -349,7 +351,6 @@ public class EmayHttpClient {
 		if (requestData == null) {
 			return httpParams.getUrl();
 		}
-		// TODO 具体区别
 		if ("POST".equalsIgnoreCase(httpParams.getMethod()) || "PUT".equalsIgnoreCase(httpParams.getMethod())) {
 			return httpParams.getUrl();
 		}
@@ -364,8 +365,8 @@ public class EmayHttpClient {
 		}
 	}
 
-	private <T> EmayHttpResponse<T> newInstance(Class<EmayHttpResponse<T>> clazz, EmayHttpResultCode resultCode, int httpCode, Map<String, String> headers, List<EmayHttpCookie> cookies, String charSet,
-			ByteArrayOutputStream outputStream, Throwable throwable) {
+	private <T> EmayHttpResponse<T> newInstance(Class<EmayHttpResponse<T>> clazz, EmayHttpResultCode resultCode, int httpCode, Map<String, String> headers, List<EmayHttpCookie> cookies,
+			String charSet, ByteArrayOutputStream outputStream, Throwable throwable) {
 		EmayHttpResponse<T> response;
 		try {
 			response = clazz.newInstance();
