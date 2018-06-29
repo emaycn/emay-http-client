@@ -1,6 +1,9 @@
 package cn.emay.http.client.request.params;
 
+import java.util.List;
 import java.util.Map;
+
+import cn.emay.http.client.common.EmayHttpCookie;
 
 /**
  * Http参数
@@ -10,14 +13,28 @@ import java.util.Map;
  * @param <T>
  *            传输数据类型
  */
-public abstract class EmayHttpRequestParams<T> {
+public abstract class EmayHttpRequestParams {
 
-	private String url;// URL
-	private String charSet = "UTF-8";// 编码
-	private String method = "GET";// Http方法
-	private Map<String, String> headers;// 头信息
-	private Map<String, String> cookies;// cookie信息
-	private T params;// 传输数据
+	/**
+	 * URL
+	 */
+	private String url;
+	/**
+	 * 编码
+	 */
+	private String charSet = "UTF-8";
+	/**
+	 * Http方法
+	 */
+	private String method = "GET";
+	/**
+	 * 头信息
+	 */
+	private Map<String, String> headers;
+	/**
+	 * cookie信息
+	 */
+	private List<EmayHttpCookie> cookies;
 
 	/**
 	 * 
@@ -25,7 +42,22 @@ public abstract class EmayHttpRequestParams<T> {
 	 *            URL
 	 */
 	public EmayHttpRequestParams(String url) {
-		this.url = url;
+		this(url,null,null,null,null);
+	}
+	
+	/**
+	 * 
+	 * @param url
+	 *            URL
+	 * @param charSet
+	 *            编码
+	 * @param method
+	 *            Http方法
+	 * @param params
+	 *            传输数据
+	 */
+	public EmayHttpRequestParams(String url, String charSet, String method) {
+		this(url,charSet,method,null,null);
 	}
 
 	/**
@@ -43,44 +75,17 @@ public abstract class EmayHttpRequestParams<T> {
 	 * @param params
 	 *            传输数据
 	 */
-	public EmayHttpRequestParams(String url, String charSet, String method, Map<String, String> headers, Map<String, String> cookies, T params) {
+	public EmayHttpRequestParams(String url, String charSet, String method, Map<String, String> headers, List<EmayHttpCookie> cookies) {
 		this.url = url;
-		this.charSet = charSet;
-		this.method = method;
+		if(charSet != null) {
+			this.charSet = charSet;
+		}
+		if(method != null) {
+			this.method = method;
+		}
 		this.headers = headers;
 		this.cookies = cookies;
-		this.params = params;
 	}
-
-	/**
-	 * 将请求参数转换为String<br/>
-	 * 主要用于get方法传输
-	 * 
-	 * @param httpParams
-	 *            请求参数
-	 * @return
-	 */
-	public abstract String paramsToString();
-
-	/**
-	 * 将请求参数转换为byte[]<br/>
-	 * 主要用于post方法传输
-	 * 
-	 * @param httpParams
-	 *            请求参数
-	 * @return
-	 */
-	public abstract byte[] paramsToBytes();
-
-	/**
-	 * 获取请求参数大小<br/>
-	 * 主要用于post方法传输
-	 * 
-	 * @param httpParams
-	 *            请求参数
-	 * @return
-	 */
-	public abstract int paramsLength();
 
 	public String getUrl() {
 		return url;
@@ -114,20 +119,12 @@ public abstract class EmayHttpRequestParams<T> {
 		this.headers = headers;
 	}
 
-	public Map<String, String> getCookies() {
+	public List<EmayHttpCookie> getCookies() {
 		return cookies;
 	}
 
-	public void setCookies(Map<String, String> cookies) {
+	public void setCookies(List<EmayHttpCookie> cookies) {
 		this.cookies = cookies;
-	}
-
-	public T getParams() {
-		return params;
-	}
-
-	public void setParams(T params) {
-		this.params = params;
 	}
 
 }

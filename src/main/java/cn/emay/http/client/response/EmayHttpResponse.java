@@ -1,8 +1,10 @@
 package cn.emay.http.client.response;
 
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 import java.util.Map;
 
+import cn.emay.http.client.common.EmayHttpCookie;
 import cn.emay.http.client.common.EmayHttpResultCode;
 
 /**
@@ -11,7 +13,7 @@ import cn.emay.http.client.common.EmayHttpResultCode;
  * @author Frank
  *
  */
-public class EmayHttpResponse<T> {
+public abstract class EmayHttpResponse<T> {
 
 	/**
 	 * Http 结果代码
@@ -31,7 +33,7 @@ public class EmayHttpResponse<T> {
 	/**
 	 * http响应Cookies
 	 */
-	private List<String> cookies;
+	private List<EmayHttpCookie> cookies;
 
 	/**
 	 * http字符集
@@ -48,10 +50,6 @@ public class EmayHttpResponse<T> {
 	 */
 	private Throwable throwable;
 
-	public EmayHttpResponse() {
-
-	}
-
 	/**
 	 * 
 	 * @param resultCode
@@ -64,20 +62,31 @@ public class EmayHttpResponse<T> {
 	 *            http响应Cookies
 	 * @param charSet
 	 *            http字符集
-	 * @param result
-	 *            http响应数据
+	 * @param outputStream
+	 *            http响应数据字节流
 	 * @param throwable
 	 *            异常
 	 */
-	public EmayHttpResponse(EmayHttpResultCode resultCode, int httpCode, Map<String, String> headers, List<String> cookies, String charSet, T result, Throwable throwable) {
+	public void setParams(EmayHttpResultCode resultCode, int httpCode, Map<String, String> headers, List<EmayHttpCookie> cookies, String charSet, ByteArrayOutputStream outputStream,
+			Throwable throwable) {
 		this.resultCode = resultCode;
 		this.httpCode = httpCode;
 		this.headers = headers;
 		this.cookies = cookies;
 		this.charSet = charSet;
-		this.result = result;
 		this.throwable = throwable;
+		if (EmayHttpResultCode.SUCCESS.equals(resultCode)) {
+			this.result = this.parseResult(outputStream);
+		}
 	}
+
+	/**
+	 * 解析
+	 * 
+	 * @param outputStream
+	 *            http响应数据字节流
+	 */
+	public abstract T parseResult(ByteArrayOutputStream outputStream);
 
 	public EmayHttpResultCode getResultCode() {
 		return resultCode;
@@ -103,11 +112,11 @@ public class EmayHttpResponse<T> {
 		this.headers = headers;
 	}
 
-	public List<String> getCookies() {
+	public List<EmayHttpCookie> getCookies() {
 		return cookies;
 	}
 
-	public void setCookies(List<String> cookies) {
+	public void setCookies(List<EmayHttpCookie> cookies) {
 		this.cookies = cookies;
 	}
 

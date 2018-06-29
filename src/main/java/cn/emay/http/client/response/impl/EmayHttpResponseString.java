@@ -1,36 +1,30 @@
 package cn.emay.http.client.response.impl;
 
-import java.util.List;
-import java.util.Map;
+import java.io.ByteArrayOutputStream;
+import java.io.UnsupportedEncodingException;
 
-import cn.emay.http.client.common.EmayHttpResultCode;
 import cn.emay.http.client.response.EmayHttpResponse;
 
 /**
- * http 响应: String
+ * 解析String响应的解析器
  * 
  * @author Frank
  *
  */
 public class EmayHttpResponseString extends EmayHttpResponse<String> {
 
-	/**
-	 * 
-	 * @param resultCode
-	 *            Http 结果代码
-	 * @param httpCode
-	 *            Http链接Code
-	 * @param headers
-	 *            Http响应头
-	 * @param cookies
-	 *            http响应Cookies
-	 * @param charSet
-	 *            http字符集
-	 * @param result
-	 *            http响应数据
-	 */
-	public EmayHttpResponseString(EmayHttpResultCode resultCode, int httpCode, Map<String, String> headers, List<String> cookies, String charSet, String result, Throwable throwable) {
-		super(resultCode, httpCode, headers, cookies, charSet, result, throwable);
+	@Override
+	public String parseResult(ByteArrayOutputStream outputStream) {
+		String st = null;
+		try {
+			if (outputStream != null) {
+				byte[] resultBytes = outputStream.toByteArray();
+				st = new String(resultBytes, super.getCharSet());
+			}
+		} catch (UnsupportedEncodingException e) {
+			throw new IllegalArgumentException(e);
+		}
+		return st;
 	}
 
 }

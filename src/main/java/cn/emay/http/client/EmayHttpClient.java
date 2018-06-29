@@ -33,10 +33,12 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
+import cn.emay.http.client.common.EmayHttpCookie;
 import cn.emay.http.client.common.EmayHttpResultCode;
-import cn.emay.http.client.request.EmayHttpRequest;
+import cn.emay.http.client.request.data.EmayHttpRequestData;
+import cn.emay.http.client.request.params.EmayHttpRequestParams;
 import cn.emay.http.client.request.params.EmayHttpsRequestParams;
-import cn.emay.http.client.response.parser.EmayHttpResponseParser;
+import cn.emay.http.client.response.EmayHttpResponse;
 
 /**
  * EMAY http客户端
@@ -67,41 +69,47 @@ public class EmayHttpClient {
 	 * @param httpReadTimeOut
 	 *            数据传输超时时间(s)
 	 */
-	public EmayHttpClient(int httpConnectionTimeOut, int httpReadTimeOut, boolean debug) {
+	public EmayHttpClient(int httpConnectionTimeOut, int httpReadTimeOut) {
 		this.httpConnectionTimeOut = httpConnectionTimeOut;
 		this.httpReadTimeOut = httpReadTimeOut;
 	}
 
-	/**
-	 * 发送HTTP请求
-	 * 
-	 * @param request
-	 *            请求
-	 * @param parser
-	 *            响应解析器
-	 * @return T 响应
-	 */
-	public <T> T service(EmayHttpRequest<?> request, EmayHttpResponseParser<T> parser) {
-		EmayHttpResultCode code = EmayHttpResultCode.SUCCESS;
-		if (request.getHttpParams().getUrl() == null || request.getHttpParams().getUrl().length() == 0) {
-			code = EmayHttpResultCode.ERROR_URL;
-			return parser.parse(code, 0, null, null, request.getHttpParams().getCharSet(), null, null);
+	public <T> EmayHttpResponse<T> service(EmayHttpRequestParams httpParams, EmayHttpsRequestParams httpsParams, EmayHttpRequestData requestData, Class<EmayHttpResponse<T>> clazz) {
+		boolean isHttps = true;
+		boolean isCustomHttps = httpsParams.isValid();
+		return service0(httpParams, isHttps, isCustomHttps, httpsParams, requestData, clazz);
+	}
+
+	public <T> EmayHttpResponse<T> service(EmayHttpRequestParams httpParams, boolean isHttps, EmayHttpRequestData requestData, Class<EmayHttpResponse<T>> clazz) {
+		boolean isCustomHttps = false;
+		return service0(httpParams, isHttps, isCustomHttps, null, requestData, clazz);
+	}
+
+	private <T> EmayHttpResponse<T> service0(EmayHttpRequestParams httpParams, boolean isHttps, boolean isCustomHttps, EmayHttpsRequestParams httpsParams, EmayHttpRequestData requestData,
+			Class<EmayHttpResponse<T>> clazz) {
+		if (httpParams == null) {
+			return newInstance(clazz, EmayHttpResultCode.ERROR_PAMARS, -1, null, null, null, null, null);
+		}
+		if (httpParams.getUrl() == null || httpParams.getUrl().length() == 0) {
+			return newInstance(clazz, EmayHttpResultCode.ERROR_URL, -1, null, null, httpParams.getCharSet(), null, null);
 		}
 		HttpURLConnection conn = null;
-		int httpCode = 0;
+		int httpCode = -1;
 		Map<String, String> headers = null;
-		List<String> cookies = null;
+		List<EmayHttpCookie> cookies = null;
 		ByteArrayOutputStream outputStream = null;
 		Throwable exp = null;
+		EmayHttpResultCode code = null;
 		try {
-			String realUrl = this.genUrl(request);
-			conn = this.createConnection(request, realUrl);
-			this.fillConnection(conn, request);
-			this.request(conn, request);
+			String url = genUrl(httpParams, requestData);
+			conn = createConnection(httpsParams, isHttps, isCustomHttps, url);
+			fillConnection(conn, httpParams);
+			request(conn, httpParams.getCharSet(), httpParams.getMethod(), requestData);
 			httpCode = conn.getResponseCode();
-			headers = this.getHeaders(conn, request.getHttpParams().getCharSet());
-			cookies = this.getCookies(conn, request.getHttpParams().getCharSet());
+			headers = this.getHeaders(conn, httpParams.getCharSet());
+			cookies = this.getCookies(conn, httpParams.getCharSet());
 			outputStream = this.getResultOutputStream(conn);
+			code = EmayHttpResultCode.SUCCESS;
 		} catch (SocketTimeoutException e) {
 			code = EmayHttpResultCode.ERROR_TIMEOUT;
 			exp = e;
@@ -136,14 +144,13 @@ public class EmayHttpClient {
 		} catch (Throwable e) {
 			code = EmayHttpResultCode.ERROR_OTHER;
 			exp = e;
-		} finally {
+		}  finally {
 			if (conn != null) {
 				conn.disconnect();
 			}
 		}
-		T t = null;
 		try {
-			t = parser.parse(code, httpCode, headers, cookies, request.getHttpParams().getCharSet(), outputStream, exp);
+			return newInstance(clazz, code, httpCode, headers, cookies, httpParams.getCharSet(), outputStream, exp);
 		} catch (Exception e) {
 			throw new IllegalArgumentException(e);
 		} finally {
@@ -156,92 +163,8 @@ public class EmayHttpClient {
 				}
 			}
 		}
-		return t;
 	}
 
-	/**
-	 * 拼接URL
-	 * 
-	 * @param request
-	 * @return
-	 */
-	private <T> String genUrl(EmayHttpRequest<T> request) {
-		if (request.getHttpParams().getMethod().equalsIgnoreCase("GET") && request.getHttpParams().getParams() != null) {
-			String getprams = request.getHttpParams().paramsToString();
-			if (getprams != null) {
-				String url = null;
-				if (request.getHttpParams().getUrl().indexOf("?") > 0) {
-					url = request.getHttpParams().getUrl() + "&" + getprams;
-				} else {
-					url = request.getHttpParams().getUrl() + "?" + getprams;
-				}
-				return url;
-			} else {
-				return request.getHttpParams().getUrl();
-			}
-		} else {
-			return request.getHttpParams().getUrl();
-		}
-	}
-
-	/**
-	 * 获取HTTP响应头
-	 * 
-	 * @param conn
-	 * @param charSet
-	 * @return
-	 * @throws UnsupportedEncodingException
-	 */
-	private Map<String, String> getHeaders(HttpURLConnection conn, String charSet) throws UnsupportedEncodingException {
-		Map<String, String> resultHeaders = new HashMap<String, String>();
-		Map<String, List<String>> header = conn.getHeaderFields();
-		if (header != null && !header.isEmpty()) {
-			for (Entry<String, List<String>> entry : header.entrySet()) {
-				if (!"Set-Cookie".equalsIgnoreCase(entry.getKey())) {
-					String valuer = "";
-					if (entry.getValue() != null && !entry.getValue().isEmpty()) {
-						for (String value : entry.getValue()) {
-							valuer += new String(value.getBytes("ISO-8859-1"), charSet) + ",";
-						}
-						valuer = valuer.substring(0, valuer.length() - 1);
-					}
-					resultHeaders.put(entry.getKey(), valuer);
-				}
-			}
-		}
-		return resultHeaders;
-	}
-
-	/**
-	 * 获取HTTP响应Cookies
-	 * 
-	 * @param conn
-	 * @param charSet
-	 * @return
-	 * @throws UnsupportedEncodingException
-	 */
-	private List<String> getCookies(HttpURLConnection conn, String charSet) throws UnsupportedEncodingException {
-		List<String> resultC = new ArrayList<String>();
-		List<String> cookies = null;
-		Map<String, List<String>> header = conn.getHeaderFields();
-		if (header != null && !header.isEmpty()) {
-			cookies = header.get("Set-Cookie");
-		}
-		if (cookies != null) {
-			for (String cookie : cookies) {
-				resultC.add(new String(cookie.getBytes("ISO-8859-1"), charSet));
-			}
-		}
-		return cookies;
-	}
-
-	/**
-	 * 获取HTTP响应数据流
-	 * 
-	 * @param conn
-	 * @return
-	 * @throws IOException
-	 */
 	private ByteArrayOutputStream getResultOutputStream(HttpURLConnection conn) throws IOException {
 		ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 		InputStream is = conn.getInputStream();
@@ -263,49 +186,72 @@ public class EmayHttpClient {
 		return outStream;
 	}
 
-	/**
-	 * 发送Http请求
-	 * 
-	 * @param conn
-	 * @param request
-	 * @throws IOException
-	 */
-	private <T> void request(HttpURLConnection conn, EmayHttpRequest<T> request) throws IOException {
-		if (request.getHttpParams().getMethod().equalsIgnoreCase("POST")) {
-			conn.setDoOutput(true);
-			// conn.connect();
-			if (request.getHttpParams().getParams() != null) {
-				byte[] content = request.getHttpParams().paramsToBytes();
-				fillHeader(conn, "Content-Length", String.valueOf(request.getHttpParams().paramsLength()));
-				DataOutputStream out = new DataOutputStream(conn.getOutputStream());
-				out.write(content);
-				out.flush();
-				out.close();
+	private List<EmayHttpCookie> getCookies(HttpURLConnection conn, String charSet) throws UnsupportedEncodingException {
+		List<EmayHttpCookie> resultC = new ArrayList<EmayHttpCookie>();
+		List<String> cookies = null;
+		Map<String, List<String>> header = conn.getHeaderFields();
+		if (header != null && !header.isEmpty()) {
+			cookies = header.get("Set-Cookie");
+		}
+		if (cookies != null) {
+			for (String cookie : cookies) {
+				resultC.add(new EmayHttpCookie(new String(cookie.getBytes("ISO-8859-1"), charSet)));
 			}
+		}
+		return resultC;
+	}
+
+	private Map<String, String> getHeaders(HttpURLConnection conn, String charSet) throws UnsupportedEncodingException {
+		Map<String, String> resultHeaders = new HashMap<String, String>();
+		Map<String, List<String>> header = conn.getHeaderFields();
+		if (header != null && !header.isEmpty()) {
+			for (Entry<String, List<String>> entry : header.entrySet()) {
+				if (!"Set-Cookie".equalsIgnoreCase(entry.getKey())) {
+					String valuer = "";
+					if (entry.getValue() != null && !entry.getValue().isEmpty()) {
+						for (String value : entry.getValue()) {
+							valuer += new String(value.getBytes("ISO-8859-1"), charSet) + ",";
+						}
+						valuer = valuer.substring(0, valuer.length() - 1);
+					}
+					resultHeaders.put(entry.getKey(), valuer);
+				}
+			}
+		}
+		return resultHeaders;
+	}
+
+	private void request(HttpURLConnection conn, String charSet, String method, EmayHttpRequestData requestData) throws IOException {
+		// TODO 具体区别
+		if ("POST".equalsIgnoreCase(method) || "PUT".equalsIgnoreCase(method)) {
+			conn.setDoOutput(true);
+			if (requestData == null) {
+				conn.connect();
+				return;
+			}
+			byte[] content = requestData.toBytes(charSet);
+			if (content == null || content.length == 0) {
+				conn.connect();
+				return;
+			}
+			int length = content.length;
+			fillHeader(conn, "Content-Length", String.valueOf(length));
+			DataOutputStream out = new DataOutputStream(conn.getOutputStream());
+			out.write(content);
+			out.flush();
+			out.close();
 		} else {
 			conn.connect();
 		}
 	}
 
-	/**
-	 * 添加请求信息
-	 * 
-	 * @param conn
-	 * @param request
-	 * @throws ProtocolException
-	 */
-	private void fillConnection(HttpURLConnection conn, EmayHttpRequest<?> request) throws ProtocolException {
+	private void fillConnection(HttpURLConnection conn, EmayHttpRequestParams httpParams) throws ProtocolException {
 		this.fillTimeout(conn);
-		this.filleMethod(conn, request);
-		this.fillHeaders(conn, request);
-		this.fillCookies(conn, request);
+		this.filleMethod(conn, httpParams.getMethod());
+		this.fillHeaders(conn, httpParams.getHeaders());
+		this.fillCookies(conn, httpParams.getCookies());
 	}
 
-	/**
-	 * 添加超时时间
-	 * 
-	 * @param conn
-	 */
 	private void fillTimeout(HttpURLConnection conn) {
 		if (httpConnectionTimeOut >= 0) {
 			conn.setConnectTimeout(httpConnectionTimeOut * 1000);
@@ -315,56 +261,31 @@ public class EmayHttpClient {
 		}
 	}
 
-	/**
-	 * 指定HTTP方法
-	 * 
-	 * @param conn
-	 * @param request
-	 * @throws ProtocolException
-	 */
-	private void filleMethod(HttpURLConnection conn, EmayHttpRequest<?> request) throws ProtocolException {
-		conn.setRequestMethod(request.getHttpParams().getMethod().toUpperCase());
+	private void filleMethod(HttpURLConnection conn, String method) throws ProtocolException {
+		conn.setRequestMethod(method.toUpperCase());
 	}
 
-	/**
-	 * 添加头信息
-	 * 
-	 * @param conn
-	 * @param request
-	 */
-	private void fillHeaders(HttpURLConnection conn, EmayHttpRequest<?> request) {
-		if (request.getHttpParams().getHeaders() != null) {
-			for (Map.Entry<String, String> entry : request.getHttpParams().getHeaders().entrySet()) {
-				fillHeader(conn, entry.getKey(), entry.getValue());
-			}
+	private void fillHeaders(HttpURLConnection conn, Map<String, String> headers) {
+		if (headers == null || headers.isEmpty()) {
+			return;
+		}
+		for (Map.Entry<String, String> entry : headers.entrySet()) {
+			fillHeader(conn, entry.getKey(), entry.getValue());
 		}
 	}
 
-	/**
-	 * 添加头信息
-	 * 
-	 * @param conn
-	 * @param request
-	 */
 	private void fillHeader(HttpURLConnection conn, String key, String value) {
 		conn.setRequestProperty(key, value);
 	}
 
-	/**
-	 * 添加Cookies
-	 * 
-	 * @param conn
-	 * @param request
-	 */
-	private void fillCookies(HttpURLConnection conn, EmayHttpRequest<?> request) {
-		if (request.getHttpParams().getCookies() == null || request.getHttpParams().getCookies().isEmpty()) {
+	private void fillCookies(HttpURLConnection conn, List<EmayHttpCookie> cookies) {
+		if (cookies == null || cookies.isEmpty()) {
 			return;
 		}
-		Map<String, String> params = request.getHttpParams().getCookies();
 		StringBuffer buffer = new StringBuffer();
-		for (Entry<String, String> entry : params.entrySet()) {
-			if (entry.getValue() != null) {
-				buffer.append(entry.getKey()).append("=").append(entry.getValue()).append(";");
+		for(EmayHttpCookie cookie : cookies) {
+			if(cookie.getName() != null && cookie.getValue() != null) {
+				buffer.append(cookie.getName()).append("=").append(cookie.getValue()).append(";");
 			}
 		}
 		String param = buffer.toString();
@@ -372,141 +293,89 @@ public class EmayHttpClient {
 		conn.setRequestProperty("Cookie", param);
 	}
 
-	/**
-	 * 创建Http链接
-	 * 
-	 * @param request
-	 * @return
-	 * @throws NoSuchAlgorithmException
-	 * @throws KeyManagementException
-	 * @throws MalformedURLException
-	 * @throws IOException
-	 * @throws CertificateException
-	 * @throws KeyStoreException
-	 * @throws UnrecoverableKeyException
-	 */
-	private HttpURLConnection createConnection(EmayHttpRequest<?> request, String realUrl)
+	private HttpURLConnection createConnection(EmayHttpsRequestParams httpsParams, boolean isHttps, boolean isCustomHttps, String url)
 			throws NoSuchAlgorithmException, KeyManagementException, MalformedURLException, IOException, UnrecoverableKeyException, KeyStoreException, CertificateException {
-		URL console = new URL(realUrl);
-		HttpURLConnection conn;
-		if (request.isHttps() && request.getHttpsParams() != null) {
-			conn = genHttpsConn(console, request);
+		HttpURLConnection conn = null;
+		URL console = new URL(url);
+		if (isHttps) {
+			SSLContext ctx = SSLContext.getInstance("TLS");
+			if (isCustomHttps) {
+				KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+				TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+				KeyStore keyStore = getKeyStore(httpsParams.getPassword(), httpsParams.getAlgorithm(), httpsParams.getKeyStorePath());
+				keyManagerFactory.init(keyStore, httpsParams.getPassword().toCharArray());
+				KeyStore trustStore = getKeyStore(httpsParams.getPassword(), httpsParams.getAlgorithm(), httpsParams.getTrustStorePath());
+				trustManagerFactory.init(trustStore);
+				ctx.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), new java.security.SecureRandom());
+			} else {
+				ctx.init(null, new TrustManager[] { new X509TrustManager() {
+					@Override
+					public X509Certificate[] getAcceptedIssuers() {
+						return null;
+					}
+
+					@Override
+					public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+					}
+
+					@Override
+					public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+					}
+				} }, new java.security.SecureRandom());
+			}
+			HttpsURLConnection sconn = (HttpsURLConnection) console.openConnection();
+			sconn.setSSLSocketFactory(ctx.getSocketFactory());
+			sconn.setHostnameVerifier(new HostnameVerifier() {
+				public boolean verify(String hostname, SSLSession session) {
+					return true;
+				}
+			});
+			conn = sconn;
 		} else {
 			conn = (HttpURLConnection) console.openConnection();
 		}
 		return conn;
 	}
 
-	/**
-	 * 获取Https链接
-	 * 
-	 * @param console
-	 * @param request
-	 * @return
-	 * @throws UnrecoverableKeyException
-	 * @throws KeyManagementException
-	 * @throws NoSuchAlgorithmException
-	 * @throws KeyStoreException
-	 * @throws CertificateException
-	 * @throws IOException
-	 */
-	private HttpURLConnection genHttpsConn(URL console, EmayHttpRequest<?> request)
-			throws UnrecoverableKeyException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException, CertificateException, IOException {
-		SSLContext ctx = getSSLContext(request.getHttpsParams());
-		HttpsURLConnection sconn = (HttpsURLConnection) console.openConnection();
-		sconn.setSSLSocketFactory(ctx.getSocketFactory());
-		sconn.setHostnameVerifier(new HostnameVerifier() {
-			public boolean verify(String hostname, SSLSession session) {
-				return true;
-			}
-		});
-		return sconn;
-	}
-
-	/**
-	 * 获得KeyStore.
-	 * 
-	 * @param keyStorePath
-	 *            密钥库路径
-	 * @param password
-	 *            密码
-	 * @return 密钥库
-	 * @throws KeyStoreException
-	 * @throws IOException
-	 * @throws CertificateException
-	 * @throws NoSuchAlgorithmException
-	 * @throws Exception
-	 */
-	private KeyStore getKeyStore(String password,String algorithm,String sotrePath) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
-		// 实例化密钥库 KeyStore用于存放证书，创建对象时 指定交换数字证书的加密标准
-		// 指定交换数字证书的加密标准
+	private KeyStore getKeyStore(String password, String algorithm, String sotrePath) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
 		KeyStore ks = KeyStore.getInstance(algorithm);
-		// 获得密钥库文件流
 		FileInputStream is = new FileInputStream(sotrePath);
-		// 加载密钥库
 		ks.load(is, password.toCharArray());
-		// 关闭密钥库文件流
 		is.close();
 		return ks;
 	}
 
-	/**
-	 * 获得SSLSocketFactory.
-	 * 
-	 * @param password
-	 *            密码
-	 * @param keyStorePath
-	 *            密钥库路径
-	 * @param trustStorePath
-	 *            信任库路径
-	 * @return SSLSocketFactory
-	 * @throws NoSuchAlgorithmException
-	 * @throws IOException
-	 * @throws CertificateException
-	 * @throws KeyStoreException
-	 * @throws UnrecoverableKeyException
-	 * @throws KeyManagementException
-	 * @throws Exception
-	 */
-	private SSLContext getSSLContext(EmayHttpsRequestParams params)
-			throws NoSuchAlgorithmException, KeyStoreException, CertificateException, IOException, UnrecoverableKeyException, KeyManagementException {
-		// 实例化SSL上下文
-		SSLContext ctx = SSLContext.getInstance("TLS");
-		if (params != null) {
-			// 实例化密钥库 KeyManager选择证书证明自己的身份
-			KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-			// 实例化信任库 TrustManager决定是否信任对方的证书
-			TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-			// 获得密钥库
-			KeyStore keyStore = getKeyStore(params.getPassword(),params.getAlgorithm(),params.getKeyStorePath());
-			// 初始化密钥工厂
-			keyManagerFactory.init(keyStore, params.getPassword().toCharArray());
-			// 获得信任库
-			KeyStore trustStore = getKeyStore(params.getPassword(),params.getAlgorithm(),params.getTrustStorePath());
-			// 初始化信任库
-			trustManagerFactory.init(trustStore);
-			// 初始化SSL上下文
-			ctx.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), new java.security.SecureRandom());
-		} else {
-			ctx.init(null, new TrustManager[] { myX509TrustManager }, new java.security.SecureRandom());
+	private String genUrl(EmayHttpRequestParams httpParams, EmayHttpRequestData requestData) {
+		if (requestData == null) {
+			return httpParams.getUrl();
 		}
-		return ctx;
+		// TODO 具体区别
+		if ("POST".equalsIgnoreCase(httpParams.getMethod()) || "PUT".equalsIgnoreCase(httpParams.getMethod())) {
+			return httpParams.getUrl();
+		}
+		String getprams = requestData.toString(httpParams.getCharSet());
+		if (getprams == null || !"".equalsIgnoreCase(getprams)) {
+			return httpParams.getUrl();
+		}
+		if (httpParams.getUrl().indexOf("?") > 0) {
+			return httpParams + "&" + getprams;
+		} else {
+			return httpParams + "?" + getprams;
+		}
 	}
 
-	private TrustManager myX509TrustManager = new X509TrustManager() {
-
-		@Override
-		public X509Certificate[] getAcceptedIssuers() {
-			return null;
+	private <T> EmayHttpResponse<T> newInstance(Class<EmayHttpResponse<T>> clazz, EmayHttpResultCode resultCode, int httpCode, Map<String, String> headers, List<EmayHttpCookie> cookies, String charSet,
+			ByteArrayOutputStream outputStream, Throwable throwable) {
+		EmayHttpResponse<T> response;
+		try {
+			response = clazz.newInstance();
+		} catch (InstantiationException e) {
+			throw new IllegalArgumentException(e);
+		} catch (IllegalAccessException e) {
+			throw new IllegalArgumentException(e);
 		}
-
-		@Override
-		public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-		}
-
-		@Override
-		public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-		}
-	};
+		response.setParams(resultCode, httpCode, headers, cookies, charSet, outputStream, throwable);
+		return response;
+	}
 
 }

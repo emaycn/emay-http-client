@@ -9,6 +9,7 @@ package cn.emay.http.client.common;
 public enum EmayHttpResultCode {
 
 	SUCCESS("成功", "SUCCESS"), //
+	ERROR_PAMARS("参数错误", "ERROR-PAMARS"), //
 	ERROR_URL("URL访问失败", "ERROR-URL"), //
 	ERROR_HTTPS_SSL("HTTPS异常", "ERROR-HTTPS-SSL"), //
 	ERROR_METHOD("HTTP方法无法识别", "ERROR-METHOD"), //
