@@ -71,7 +71,7 @@ public class EmayHttpResponse {
 	}
 
 	public boolean isSuccess() {
-		return httpCode == 200 && EmayHttpResultCode.SUCCESS.equals(resultCode);
+		return EmayHttpResultCode.SUCCESS.equals(resultCode);
 	}
 
 	public <T> T getData(EmayHttpResponseParser<T> parser, String charSet) {
