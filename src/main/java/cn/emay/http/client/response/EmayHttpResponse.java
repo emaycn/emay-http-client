@@ -69,8 +69,8 @@ public class EmayHttpResponse {
 		this.data = data;
 		this.throwable = throwable;
 	}
-	
-	public <T> T getData(EmayHttpResponseParser<T> parser,String charSet) {
+
+	public <T> T getData(EmayHttpResponseParser<T> parser, String charSet) {
 		return parser.parseData(httpCode, headers, cookies, charSet, data);
 	}
 
@@ -110,48 +110,24 @@ public class EmayHttpResponse {
 		return resultCode;
 	}
 
-	public void setResultCode(EmayHttpResultCode resultCode) {
-		this.resultCode = resultCode;
-	}
-
 	public int getHttpCode() {
 		return httpCode;
-	}
-
-	public void setHttpCode(int httpCode) {
-		this.httpCode = httpCode;
 	}
 
 	public List<EmayHttpHeader> getHeaders() {
 		return headers;
 	}
 
-	public void setHeaders(List<EmayHttpHeader> headers) {
-		this.headers = headers;
-	}
-
 	public List<EmayHttpCookie> getCookies() {
 		return cookies;
-	}
-
-	public void setCookies(List<EmayHttpCookie> cookies) {
-		this.cookies = cookies;
 	}
 
 	public Throwable getThrowable() {
 		return throwable;
 	}
 
-	public void setThrowable(Throwable throwable) {
-		this.throwable = throwable;
-	}
-
 	public byte[] getData() {
 		return data;
-	}
-
-	public void setData(byte[] data) {
-		this.data = data;
 	}
 
 }

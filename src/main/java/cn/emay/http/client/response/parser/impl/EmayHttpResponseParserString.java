@@ -17,7 +17,7 @@ public class EmayHttpResponseParserString implements EmayHttpResponseParser<Stri
 
 	@Override
 	public String parseData(int httpCode, List<EmayHttpHeader> headers, List<EmayHttpCookie> cookies, String charSet, byte[] data) {
-		if(data == null) {
+		if (data == null) {
 			return null;
 		}
 		try {

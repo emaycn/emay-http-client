@@ -6,7 +6,7 @@ import cn.emay.http.client.common.EmayHttpCookie;
 import cn.emay.http.client.common.EmayHttpHeader;
 
 public interface EmayHttpResponseParser<T> {
-	
+
 	/**
 	 * 解析
 	 * 

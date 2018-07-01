@@ -10,14 +10,16 @@ import cn.emay.http.client.request.https.EmayHttpsCustomParams;
 import cn.emay.http.client.response.EmayHttpResponse;
 
 /**
- * EMAY http客户端
+ * EMAY http客户端<br/>
+ * POST PUT等同<br/>
+ * 大数据传输及响应未考虑<br/>
  * 
  * @author Frank
  *
  */
 public class EmayHttpClient {
-	
-	/*post*/
+
+	/* post */
 
 	public static EmayHttpResponse post(String url, EmayHttpRequestData requestData) {
 		return EmayHttpLogic.getInstance().service(url, "POST", requestData);
@@ -27,22 +29,22 @@ public class EmayHttpClient {
 		return EmayHttpLogic.getInstance().service(url, "POST", charSet, requestData);
 	}
 
-	public static EmayHttpResponse post(String url,  String charSet, List<EmayHttpHeader> headers, List<EmayHttpCookie> cookies, EmayHttpRequestData requestData) {
+	public static EmayHttpResponse post(String url, String charSet, List<EmayHttpHeader> headers, List<EmayHttpCookie> cookies, EmayHttpRequestData requestData) {
 		return EmayHttpLogic.getInstance().service(url, "POST", charSet, headers, cookies, requestData);
 	}
 
-	public static EmayHttpResponse post(String url, String charSet, List<EmayHttpHeader> headers, List<EmayHttpCookie> cookies, EmayHttpRequestData requestData,
-			int connectionTimeOut, int readTimeOut) {
+	public static EmayHttpResponse post(String url, String charSet, List<EmayHttpHeader> headers, List<EmayHttpCookie> cookies, EmayHttpRequestData requestData, int connectionTimeOut,
+			int readTimeOut) {
 		return EmayHttpLogic.getInstance().service(url, "POST", charSet, headers, cookies, requestData, connectionTimeOut, readTimeOut);
 	}
 
-	public static EmayHttpResponse post(String url, String charSet, List<EmayHttpHeader> headers, List<EmayHttpCookie> cookies, EmayHttpRequestData requestData,
-			int connectionTimeOut, int readTimeOut, EmayHttpsCustomParams customHttpsParams) {
+	public static EmayHttpResponse post(String url, String charSet, List<EmayHttpHeader> headers, List<EmayHttpCookie> cookies, EmayHttpRequestData requestData, int connectionTimeOut, int readTimeOut,
+			EmayHttpsCustomParams customHttpsParams) {
 		return EmayHttpLogic.getInstance().service(url, "POST", charSet, headers, cookies, requestData, connectionTimeOut, readTimeOut, customHttpsParams);
 	}
-	
-	/*get*/
-	
+
+	/* get */
+
 	public static EmayHttpResponse get(String url) {
 		return EmayHttpLogic.getInstance().service(url, "GET");
 	}
@@ -55,21 +57,21 @@ public class EmayHttpClient {
 		return EmayHttpLogic.getInstance().service(url, "GET", charSet, requestData);
 	}
 
-	public static EmayHttpResponse get(String url,  String charSet, List<EmayHttpHeader> headers, List<EmayHttpCookie> cookies, EmayHttpRequestData requestData) {
+	public static EmayHttpResponse get(String url, String charSet, List<EmayHttpHeader> headers, List<EmayHttpCookie> cookies, EmayHttpRequestData requestData) {
 		return EmayHttpLogic.getInstance().service(url, "GET", charSet, headers, cookies, requestData);
 	}
 
-	public static EmayHttpResponse get(String url, String charSet, List<EmayHttpHeader> headers, List<EmayHttpCookie> cookies, EmayHttpRequestData requestData,
-			int connectionTimeOut, int readTimeOut) {
+	public static EmayHttpResponse get(String url, String charSet, List<EmayHttpHeader> headers, List<EmayHttpCookie> cookies, EmayHttpRequestData requestData, int connectionTimeOut,
+			int readTimeOut) {
 		return EmayHttpLogic.getInstance().service(url, "GET", charSet, headers, cookies, requestData, connectionTimeOut, readTimeOut);
 	}
 
-	public static EmayHttpResponse get(String url, String charSet, List<EmayHttpHeader> headers, List<EmayHttpCookie> cookies, EmayHttpRequestData requestData,
-			int connectionTimeOut, int readTimeOut, EmayHttpsCustomParams customHttpsParams) {
+	public static EmayHttpResponse get(String url, String charSet, List<EmayHttpHeader> headers, List<EmayHttpCookie> cookies, EmayHttpRequestData requestData, int connectionTimeOut, int readTimeOut,
+			EmayHttpsCustomParams customHttpsParams) {
 		return EmayHttpLogic.getInstance().service(url, "GET", charSet, headers, cookies, requestData, connectionTimeOut, readTimeOut, customHttpsParams);
 	}
-	
-	/*service*/
+
+	/* service */
 
 	public static EmayHttpResponse service(String url, String method) {
 		return EmayHttpLogic.getInstance().service(url, method);

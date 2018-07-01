@@ -40,24 +40,22 @@ import cn.emay.http.client.response.EmayHttpResponse;
 
 /**
  * 逻辑<br/>
- * POST PUT等同<br/>
- * 大数据传输及响应未考虑<br/>
  * 
  * @author Frank
  *
  */
 public class EmayHttpLogic {
-	
+
 	private static EmayHttpLogic LOGIC = new EmayHttpLogic();
-	
+
 	private EmayHttpLogic() {
-		
+
 	}
-	
+
 	public static EmayHttpLogic getInstance() {
 		return LOGIC;
 	}
-	
+
 	public EmayHttpResponse service(String url, String method) {
 		return service(url, method, "UTF-8", null, null, null, 30, 30, null);
 	}
@@ -116,7 +114,7 @@ public class EmayHttpLogic {
 		List<EmayHttpHeader> headers0 = headers;
 		List<EmayHttpCookie> cookies0 = cookies;
 		EmayHttpsCustomParams customHttpsParams0 = customHttpsParams;
-		if(customHttpsParams0 != null && !customHttpsParams.isValid()) {
+		if (customHttpsParams0 != null && !customHttpsParams.isValid()) {
 			return new EmayHttpResponse(EmayHttpResultCode.ERROR_CUSTOM_HTTPS_PAMARS, -1, null, null, null, null);
 		}
 

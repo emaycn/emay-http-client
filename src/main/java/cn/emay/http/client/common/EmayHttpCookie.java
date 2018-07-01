@@ -110,7 +110,7 @@ public class EmayHttpCookie {
 					this.path = value;
 				} else if (key.equalsIgnoreCase("Expires")) {
 					try {
-						this.expires = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss 'GMT'",Locale.US).parse(value);
+						this.expires = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss 'GMT'", Locale.US).parse(value);
 					} catch (ParseException e) {
 					}
 				} else if (key.equalsIgnoreCase("Max-Age")) {
