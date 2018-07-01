@@ -17,8 +17,12 @@ public class EmayHttpResponseParserString implements EmayHttpResponseParser<Stri
 
 	@Override
 	public String parseData(int httpCode, List<EmayHttpHeader> headers, List<EmayHttpCookie> cookies, String charSet, byte[] data) {
+		if(data == null) {
+			return null;
+		}
 		try {
-			return new String(data, charSet);
+			String charSet0 = charSet != null ? charSet : "UTF-8";
+			return new String(data, charSet0);
 		} catch (UnsupportedEncodingException e) {
 			throw new IllegalArgumentException(e);
 		}
