@@ -25,6 +25,10 @@ public class EmayHttpClient {
 	public static void openDebug() {
 		 EmayHttpLogic.getInstance().openDebug();
 	}
+	
+	public static void closeDebug() {
+		 EmayHttpLogic.getInstance().closeDebug();
+	}
 
 	/* post */
 

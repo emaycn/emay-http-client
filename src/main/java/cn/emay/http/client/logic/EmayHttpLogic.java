@@ -68,6 +68,10 @@ public class EmayHttpLogic {
 		debug = true;
 	}
 	
+	public void closeDebug() {
+		debug = false;
+	}
+	
 	public EmayHttpResponse service(String url, EmayHttpMethod method) {
 		return service(url, method, "UTF-8", null, null, null, 30, 30, null);
 	}
