@@ -69,7 +69,7 @@ public class EmayHttpResponse {
 		this.data = data;
 		this.throwable = throwable;
 	}
-	
+
 	public boolean isSuccess() {
 		return httpCode == 200 && EmayHttpResultCode.SUCCESS.equals(resultCode);
 	}
@@ -94,6 +94,14 @@ public class EmayHttpResponse {
 		return list;
 	}
 
+	public EmayHttpHeader getHeaderSingle(String name) {
+		List<EmayHttpHeader> headerlist = getHeader(name);
+		if (headerlist == null || headerlist.isEmpty()) {
+			return null;
+		}
+		return headerlist.get(0);
+	}
+
 	public List<EmayHttpCookie> getCookie(String name) {
 		if (name == null) {
 			return null;
@@ -108,6 +116,14 @@ public class EmayHttpResponse {
 			}
 		}
 		return list;
+	}
+
+	public EmayHttpCookie getCookieSingle(String name) {
+		List<EmayHttpCookie> cookielist = getCookie(name);
+		if (cookielist == null || cookielist.isEmpty()) {
+			return null;
+		}
+		return cookielist.get(0);
 	}
 
 	public EmayHttpResultCode getResultCode() {

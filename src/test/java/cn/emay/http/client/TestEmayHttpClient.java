@@ -9,8 +9,11 @@ public class TestEmayHttpClient {
 
 	@Test
 	public void testClient() {
+		
 
-		EmayHttpResponse response = EmayHttpClient.get("https://www.baidu.com");
+		EmayHttpClient.openDebug();
+		
+		EmayHttpResponse response = EmayHttpClient.get("https://www.baidu.com1");
 		String st = response.getData(new EmayHttpResponseParserString(), "UTF-8");
 		System.out.println(st);
 
