@@ -1,11 +1,12 @@
 package cn.emay.http.client.response;
 
-import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import cn.emay.http.client.common.EmayHttpCookie;
+import cn.emay.http.client.common.EmayHttpHeader;
 import cn.emay.http.client.common.EmayHttpResultCode;
+import cn.emay.http.client.response.parser.EmayHttpResponseParser;
 
 /**
  * Http响应
@@ -13,7 +14,7 @@ import cn.emay.http.client.common.EmayHttpResultCode;
  * @author Frank
  *
  */
-public abstract class EmayHttpResponse<T> {
+public class EmayHttpResponse {
 
 	/**
 	 * Http 结果代码
@@ -28,7 +29,7 @@ public abstract class EmayHttpResponse<T> {
 	/**
 	 * Http响应头
 	 */
-	private Map<String, String> headers;
+	private List<EmayHttpHeader> headers;
 
 	/**
 	 * http响应Cookies
@@ -36,14 +37,9 @@ public abstract class EmayHttpResponse<T> {
 	private List<EmayHttpCookie> cookies;
 
 	/**
-	 * http字符集
-	 */
-	private String charSet;
-
-	/**
 	 * http响应数据
 	 */
-	private T result;
+	private byte[] data;
 
 	/**
 	 * 异常
@@ -60,33 +56,55 @@ public abstract class EmayHttpResponse<T> {
 	 *            Http响应头
 	 * @param cookies
 	 *            http响应Cookies
-	 * @param charSet
-	 *            http字符集
-	 * @param outputStream
-	 *            http响应数据字节流
+	 * @param data
+	 *            http响应数据
 	 * @param throwable
 	 *            异常
 	 */
-	public void setParams(EmayHttpResultCode resultCode, int httpCode, Map<String, String> headers, List<EmayHttpCookie> cookies, String charSet, ByteArrayOutputStream outputStream,
-			Throwable throwable) {
+	public EmayHttpResponse(EmayHttpResultCode resultCode, int httpCode, List<EmayHttpHeader> headers, List<EmayHttpCookie> cookies, byte[] data, Throwable throwable) {
 		this.resultCode = resultCode;
 		this.httpCode = httpCode;
 		this.headers = headers;
 		this.cookies = cookies;
-		this.charSet = charSet;
+		this.data = data;
 		this.throwable = throwable;
-		if (EmayHttpResultCode.SUCCESS.equals(resultCode)) {
-			this.result = this.parseResult(outputStream);
-		}
+	}
+	
+	public <T> T getData(EmayHttpResponseParser<T> parser,String charSet) {
+		return parser.parseData(httpCode, headers, cookies, charSet, data);
 	}
 
-	/**
-	 * 解析
-	 * 
-	 * @param outputStream
-	 *            http响应数据字节流
-	 */
-	public abstract T parseResult(ByteArrayOutputStream outputStream);
+	public List<EmayHttpHeader> getHeader(String name) {
+		if (name == null) {
+			return null;
+		}
+		if (headers == null || headers.isEmpty()) {
+			return null;
+		}
+		List<EmayHttpHeader> list = new ArrayList<EmayHttpHeader>();
+		for (EmayHttpHeader header : headers) {
+			if (header.getName().equals(name)) {
+				list.add(header);
+			}
+		}
+		return list;
+	}
+
+	public List<EmayHttpCookie> getCookie(String name) {
+		if (name == null) {
+			return null;
+		}
+		if (cookies == null || cookies.isEmpty()) {
+			return null;
+		}
+		List<EmayHttpCookie> list = new ArrayList<EmayHttpCookie>();
+		for (EmayHttpCookie header : cookies) {
+			if (header.getName().equals(name)) {
+				list.add(header);
+			}
+		}
+		return list;
+	}
 
 	public EmayHttpResultCode getResultCode() {
 		return resultCode;
@@ -104,11 +122,11 @@ public abstract class EmayHttpResponse<T> {
 		this.httpCode = httpCode;
 	}
 
-	public Map<String, String> getHeaders() {
+	public List<EmayHttpHeader> getHeaders() {
 		return headers;
 	}
 
-	public void setHeaders(Map<String, String> headers) {
+	public void setHeaders(List<EmayHttpHeader> headers) {
 		this.headers = headers;
 	}
 
@@ -120,28 +138,20 @@ public abstract class EmayHttpResponse<T> {
 		this.cookies = cookies;
 	}
 
-	public String getCharSet() {
-		return charSet;
-	}
-
-	public void setCharSet(String charSet) {
-		this.charSet = charSet;
-	}
-
-	public T getResult() {
-		return result;
-	}
-
-	public void setResult(T result) {
-		this.result = result;
-	}
-
 	public Throwable getThrowable() {
 		return throwable;
 	}
 
 	public void setThrowable(Throwable throwable) {
 		this.throwable = throwable;
+	}
+
+	public byte[] getData() {
+		return data;
+	}
+
+	public void setData(byte[] data) {
+		this.data = data;
 	}
 
 }
