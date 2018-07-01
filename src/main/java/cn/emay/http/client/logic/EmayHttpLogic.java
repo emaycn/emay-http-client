@@ -176,7 +176,7 @@ public class EmayHttpLogic {
 			if(response.isSuccess()) {
 				logger.info("http " + method0.toString() + " " + url0 + " success.");
 			}else {
-				logger.error("http error. resultCode: " + response.getResultCode().getCode() + ", httpCode:" + response.getHttpCode(),response.getThrowable());
+				logger.error("http " + method0.toString() + " " + url0 + " error. resultCode: " + response.getResultCode().getCode() + ", httpCode:" + response.getHttpCode(),response.getThrowable());
 			}
 		}
 		return response;

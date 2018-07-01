@@ -13,7 +13,7 @@ public class TestEmayHttpClient {
 
 		EmayHttpClient.openDebug();
 		
-		EmayHttpResponse response = EmayHttpClient.get("https://www.baidu.com1");
+		EmayHttpResponse response = EmayHttpClient.get("https://www.baidu.com");
 		String st = response.getData(new EmayHttpResponseParserString(), "UTF-8");
 		System.out.println(st);
 
