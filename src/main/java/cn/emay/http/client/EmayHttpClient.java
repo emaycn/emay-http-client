@@ -4,6 +4,7 @@ import java.util.List;
 
 import cn.emay.http.client.common.EmayHttpCookie;
 import cn.emay.http.client.common.EmayHttpHeader;
+import cn.emay.http.client.logic.EmayHttpLogic;
 import cn.emay.http.client.request.data.EmayHttpRequestData;
 import cn.emay.http.client.request.https.EmayHttpsCustomParams;
 import cn.emay.http.client.response.EmayHttpResponse;

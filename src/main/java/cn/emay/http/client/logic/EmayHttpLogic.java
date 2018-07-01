@@ -1,4 +1,4 @@
-package cn.emay.http.client;
+package cn.emay.http.client.logic;
 
 import java.io.DataOutputStream;
 import java.io.FileInputStream;
