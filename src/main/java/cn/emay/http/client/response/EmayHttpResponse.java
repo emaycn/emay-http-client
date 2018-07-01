@@ -69,6 +69,10 @@ public class EmayHttpResponse {
 		this.data = data;
 		this.throwable = throwable;
 	}
+	
+	public boolean isSuccess() {
+		return httpCode == 200 && EmayHttpResultCode.SUCCESS.equals(resultCode);
+	}
 
 	public <T> T getData(EmayHttpResponseParser<T> parser, String charSet) {
 		return parser.parseData(httpCode, headers, cookies, charSet, data);
