@@ -5,16 +5,46 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+/**
+ * Http Cookie
+ * 
+ * @author Frank
+ *
+ */
 public class EmayHttpCookie {
 
-	private String name; // Cookie名称 NAME= ... "$Name" style is reserved
-	private String value; // Cookie值 value of NAME
-	private String domain; // 生效域名 ;Domain=VALUE ... domain that sees cookie
-	private String path; // 生效路径 ;Path=VALUE ... URLs that see the cookie
-	private int maxAge = -1; // 最大存活时间 ;Max-Age=VALUE ... cookies auto-expire
-	private Date expires; // 到什么时候过期，与maxAge互斥
-	private boolean secure = false; // 是否只再https中使用 ;Secure ... e.g. use SSL
-	private boolean httpOnly = false;// 是否必须用于http传输
+	/**
+	 * Cookie名称 NAME= ... "$Name" style is reserved
+	 */
+	private String name;
+	/**
+	 * Cookie值 value of NAME
+	 */
+	private String value;
+	/**
+	 * 生效域名 ;Domain=VALUE ... domain that sees cookie
+	 */
+	private String domain;
+	/**
+	 * 生效路径 ;Path=VALUE ... URLs that see the cookie
+	 */
+	private String path;
+	/**
+	 * 最大存活时间 ;Max-Age=VALUE ... cookies auto-expire
+	 */
+	private int maxAge = -1;
+	/**
+	 * 到什么时候过期，与maxAge互斥
+	 */
+	private Date expires;
+	/**
+	 * 是否只再https中使用 ;Secure ... e.g. use SSL
+	 */
+	private boolean secure = false;
+	/**
+	 * 是否必须用于http传输
+	 */
+	private boolean httpOnly = false;
 
 	public EmayHttpCookie() {
 

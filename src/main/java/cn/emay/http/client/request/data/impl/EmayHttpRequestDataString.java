@@ -32,11 +32,6 @@ public class EmayHttpRequestDataString implements EmayHttpRequestData {
 	}
 
 	@Override
-	public String toString(String charSet) {
-		return data;
-	}
-
-	@Override
 	public byte[] toBytes(String charSet) {
 		if (contentBytes != null) {
 			return contentBytes;

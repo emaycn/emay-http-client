@@ -5,6 +5,13 @@ import java.util.List;
 import cn.emay.http.client.common.EmayHttpCookie;
 import cn.emay.http.client.common.EmayHttpHeader;
 
+/**
+ * 响应数据解析器
+ * 
+ * @author Frank
+ *
+ * @param <T>
+ */
 public interface EmayHttpResponseParser<T> {
 
 	/**

@@ -70,14 +70,35 @@ public class EmayHttpResponse {
 		this.throwable = throwable;
 	}
 
+	/**
+	 * 是否成功的响应
+	 * 
+	 * @return
+	 */
 	public boolean isSuccess() {
 		return EmayHttpResultCode.SUCCESS.equals(resultCode);
 	}
 
+	/**
+	 * 获取自定义转换规则的数据
+	 * 
+	 * @param parser
+	 *            数据转换器
+	 * @param charSet
+	 *            编码
+	 * @return
+	 */
 	public <T> T getData(EmayHttpResponseParser<T> parser, String charSet) {
 		return parser.parseData(httpCode, headers, cookies, charSet, data);
 	}
 
+	/**
+	 * 获取头信息
+	 * 
+	 * @param name
+	 *            头名称
+	 * @return
+	 */
 	public List<EmayHttpHeader> getHeader(String name) {
 		if (name == null) {
 			return null;
@@ -94,6 +115,13 @@ public class EmayHttpResponse {
 		return list;
 	}
 
+	/**
+	 * 获取单个头信息
+	 * 
+	 * @param name
+	 *            头名称
+	 * @return
+	 */
 	public EmayHttpHeader getHeaderSingle(String name) {
 		List<EmayHttpHeader> headerlist = getHeader(name);
 		if (headerlist == null || headerlist.isEmpty()) {
@@ -102,6 +130,13 @@ public class EmayHttpResponse {
 		return headerlist.get(0);
 	}
 
+	/**
+	 * 获取Cookie
+	 * 
+	 * @param name
+	 *            Cookie名称
+	 * @return
+	 */
 	public List<EmayHttpCookie> getCookie(String name) {
 		if (name == null) {
 			return null;
@@ -118,6 +153,13 @@ public class EmayHttpResponse {
 		return list;
 	}
 
+	/**
+	 * 获取单个Cookie
+	 * 
+	 * @param name
+	 *            Cookie名称
+	 * @return
+	 */
 	public EmayHttpCookie getCookieSingle(String name) {
 		List<EmayHttpCookie> cookielist = getCookie(name);
 		if (cookielist == null || cookielist.isEmpty()) {

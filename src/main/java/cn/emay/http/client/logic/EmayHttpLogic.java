@@ -38,74 +38,185 @@ import cn.emay.http.client.common.EmayHttpCookie;
 import cn.emay.http.client.common.EmayHttpHeader;
 import cn.emay.http.client.common.EmayHttpMethod;
 import cn.emay.http.client.common.EmayHttpResultCode;
-import cn.emay.http.client.request.data.EmayHttpRequestData;
 import cn.emay.http.client.request.https.EmayHttpsCustomParams;
 import cn.emay.http.client.response.EmayHttpResponse;
 
 /**
- * 逻辑<br/>
+ * Http请求逻辑<br/>
  * 
  * @author Frank
  *
  */
 public class EmayHttpLogic {
-	
+
 	private Logger logger = LoggerFactory.getLogger(EmayHttpLogic.class);
 
+	/**
+	 * 是否DEBUG
+	 */
 	private boolean debug = false;
-	
+
+	/**
+	 * 单例
+	 */
 	private static EmayHttpLogic LOGIC = new EmayHttpLogic();
 
+	/**
+	 * 单例
+	 */
 	private EmayHttpLogic() {
 
 	}
 
+	/**
+	 * 获取单例
+	 */
 	public static EmayHttpLogic getInstance() {
 		return LOGIC;
 	}
 
+	/**
+	 * 打开DEBUG
+	 */
 	public void openDebug() {
 		debug = true;
 	}
-	
+
+	/**
+	 * 关闭DEBUG
+	 */
 	public void closeDebug() {
 		debug = false;
 	}
-	
+
+	/**
+	 * http请求
+	 * 
+	 * @param url
+	 *            链接
+	 * @param method
+	 *            方法
+	 * @return
+	 */
 	public EmayHttpResponse service(String url, EmayHttpMethod method) {
 		return service(url, method, "UTF-8", null, null, null, 30, 30, null);
 	}
 
-	public EmayHttpResponse service(String url, EmayHttpMethod method, EmayHttpRequestData requestData) {
+	/**
+	 * http请求
+	 * 
+	 * @param url
+	 *            链接
+	 * @param method
+	 *            方法
+	 * @param requestData
+	 *            传输数据【Get可以不传】
+	 * @return
+	 */
+	public EmayHttpResponse service(String url, EmayHttpMethod method, byte[] requestData) {
 		return service(url, method, "UTF-8", null, null, requestData, 30, 30, null);
 	}
 
-	public EmayHttpResponse service(String url, EmayHttpMethod method, String charSet, EmayHttpRequestData requestData) {
+	/**
+	 * http请求
+	 * 
+	 * @param url
+	 *            链接
+	 * @param method
+	 *            方法
+	 * @param charSet
+	 *            编码
+	 * @param requestData
+	 *            传输数据【Get可以不传】
+	 * @return
+	 */
+	public EmayHttpResponse service(String url, EmayHttpMethod method, String charSet, byte[] requestData) {
 		return service(url, method, charSet, null, null, requestData, 30, 30, null);
 	}
 
-	public EmayHttpResponse service(String url, EmayHttpMethod method, String charSet, List<EmayHttpHeader> headers, List<EmayHttpCookie> cookies, EmayHttpRequestData requestData) {
+	/**
+	 * http请求
+	 * 
+	 * @param url
+	 *            链接
+	 * @param method
+	 *            方法
+	 * @param charSet
+	 *            编码
+	 * @param headers
+	 *            Http头信息
+	 * @param cookies
+	 *            Cookie
+	 * @param requestData
+	 *            传输数据【Get可以不传】
+	 * @return
+	 */
+	public EmayHttpResponse service(String url, EmayHttpMethod method, String charSet, List<EmayHttpHeader> headers, List<EmayHttpCookie> cookies, byte[] requestData) {
 		return service(url, method, charSet, headers, cookies, requestData, 30, 30, null);
 	}
 
-	public EmayHttpResponse service(String url, EmayHttpMethod method, String charSet, List<EmayHttpHeader> headers, List<EmayHttpCookie> cookies, EmayHttpRequestData requestData, int connectionTimeOut,
+	/**
+	 * http请求
+	 * 
+	 * @param url
+	 *            链接
+	 * @param method
+	 *            方法
+	 * @param charSet
+	 *            编码
+	 * @param headers
+	 *            Http头信息
+	 * @param cookies
+	 *            Cookie
+	 * @param requestData
+	 *            传输数据【Get可以不传】
+	 * @param connectionTimeOut
+	 *            链接超时时间
+	 * @param readTimeOut
+	 *            读取数据超时时间
+	 * @return
+	 */
+	public EmayHttpResponse service(String url, EmayHttpMethod method, String charSet, List<EmayHttpHeader> headers, List<EmayHttpCookie> cookies, byte[] requestData, int connectionTimeOut,
 			int readTimeOut) {
 		return service(url, method, charSet, headers, cookies, requestData, connectionTimeOut, readTimeOut, null);
 	}
 
-	public EmayHttpResponse service(String url, EmayHttpMethod method, String charSet, List<EmayHttpHeader> headers, List<EmayHttpCookie> cookies, EmayHttpRequestData requestData, int connectionTimeOut,
+	/**
+	 * http请求
+	 * 
+	 * @param url
+	 *            链接
+	 * @param method
+	 *            方法
+	 * @param charSet
+	 *            编码
+	 * @param headers
+	 *            Http头信息
+	 * @param cookies
+	 *            Cookie
+	 * @param requestData
+	 *            传输数据【Get可以不传】
+	 * @param connectionTimeOut
+	 *            链接超时时间
+	 * @param readTimeOut
+	 *            读取数据超时时间
+	 * @param customHttpsParams
+	 *            自定义Https证书相关参数
+	 * @return
+	 */
+	public EmayHttpResponse service(String url, EmayHttpMethod method, String charSet, List<EmayHttpHeader> headers, List<EmayHttpCookie> cookies, byte[] requestData, int connectionTimeOut,
 			int readTimeOut, EmayHttpsCustomParams customHttpsParams) {
 		EmayHttpResponse response = null;
 		if (url == null || url.length() == 0) {
 			response = new EmayHttpResponse(EmayHttpResultCode.ERROR_URL, -1, null, null, null, null);
-			if(debug) {
+			if (debug) {
 				logger.error("url is null");
 			}
 			return response;
 		}
 		if (customHttpsParams != null && !customHttpsParams.isValid()) {
 			response = new EmayHttpResponse(EmayHttpResultCode.ERROR_CUSTOM_HTTPS_PAMARS, -1, null, null, null, null);
-			if(debug) {
+			if (debug) {
 				logger.error("customHttpsParams error");
 			}
 			return response;
@@ -126,24 +237,22 @@ public class EmayHttpLogic {
 		String charSet0 = charSet != null ? charSet : "UTF-8";
 		int connectionTimeOut0 = connectionTimeOut > 0 ? connectionTimeOut : 30;
 		int readTimeOut0 = readTimeOut > 0 ? readTimeOut : 30;
-		EmayHttpRequestData requestData0 = requestData;
 		List<EmayHttpHeader> headers0 = headers;
 		List<EmayHttpCookie> cookies0 = cookies;
 		EmayHttpsCustomParams customHttpsParams0 = customHttpsParams;
 
 		HttpURLConnection conn0 = null;
 		try {
-			url0 = genUrl(url0, method0, charSet0, requestData0);
 			conn0 = createConnection(url0, isHttps0, customHttpsParams0);
 			fillTimeout(conn0, connectionTimeOut0, readTimeOut0);
 			filleMethod(conn0, method0);
 			fillHeaders(conn0, headers0);
 			fillCookies(conn0, isHttps0, cookies0);
-			request(conn0, charSet0, method0, requestData0);
+			request(conn0, requestData);
 			int httpCode0 = conn0.getResponseCode();
 			List<EmayHttpHeader> responseHeaders0 = this.getHeaders(conn0, charSet0);
 			List<EmayHttpCookie> responseCookies0 = this.getCookies(conn0, charSet0);
-			byte[] responseData0 = this.getResultOutputStream(conn0);
+			byte[] responseData0 = this.getResult(conn0);
 			response = new EmayHttpResponse(EmayHttpResultCode.SUCCESS, httpCode0, responseHeaders0, responseCookies0, responseData0, null);
 		} catch (SocketTimeoutException e) {
 			response = new EmayHttpResponse(EmayHttpResultCode.ERROR_TIMEOUT, -1, null, null, null, e);
@@ -170,40 +279,37 @@ public class EmayHttpLogic {
 				try {
 					conn0.disconnect();
 				} catch (Exception e2) {
-					if(debug) {
-						logger.error("close connection error :",e2);
+					if (debug) {
+						logger.error("close connection error :", e2);
 					}
 				}
 			}
 		}
-		if(debug) {
-			if(response.isSuccess()) {
+		if (debug) {
+			if (response.isSuccess()) {
 				logger.info("http " + method0.toString() + " " + url0 + " success.");
-			}else {
-				logger.error("http " + method0.toString() + " " + url0 + " error. resultCode: " + response.getResultCode().getCode() + ", httpCode:" + response.getHttpCode(),response.getThrowable());
+			} else {
+				logger.error("http " + method0.toString() + " " + url0 + " error. resultCode: " + response.getResultCode().getCode() + ", httpCode:" + response.getHttpCode(), response.getThrowable());
 			}
 		}
 		return response;
 	}
 
-	private String genUrl(String url, EmayHttpMethod method, String charSet, EmayHttpRequestData requestData) {
-		if (requestData == null) {
-			return url;
-		}
-		if (EmayHttpMethod.POST.equals(method) || EmayHttpMethod.PUT.equals(method)) {
-			return url;
-		}
-		String getprams = requestData.toString(charSet);
-		if (getprams == null || !"".equalsIgnoreCase(getprams)) {
-			return url;
-		}
-		if (url.indexOf("?") > 0) {
-			return url + "&" + getprams;
-		} else {
-			return url + "?" + getprams;
-		}
-	}
-
+	/**
+	 * 创建Http链接
+	 * 
+	 * @param url
+	 * @param isHttps
+	 * @param httpsParams
+	 * @return
+	 * @throws NoSuchAlgorithmException
+	 * @throws KeyManagementException
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 * @throws UnrecoverableKeyException
+	 * @throws KeyStoreException
+	 * @throws CertificateException
+	 */
 	private HttpURLConnection createConnection(String url, boolean isHttps, EmayHttpsCustomParams httpsParams)
 			throws NoSuchAlgorithmException, KeyManagementException, MalformedURLException, IOException, UnrecoverableKeyException, KeyStoreException, CertificateException {
 		HttpURLConnection conn = null;
@@ -250,7 +356,19 @@ public class EmayHttpLogic {
 		return conn;
 	}
 
-	private KeyStore getKeyStore(String password, String algorithm, String sotrePath) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException{
+	/**
+	 * 获取Https的密钥库
+	 * 
+	 * @param password
+	 * @param algorithm
+	 * @param sotrePath
+	 * @return
+	 * @throws KeyStoreException
+	 * @throws NoSuchAlgorithmException
+	 * @throws CertificateException
+	 * @throws IOException
+	 */
+	private KeyStore getKeyStore(String password, String algorithm, String sotrePath) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
 		KeyStore ks = KeyStore.getInstance(algorithm);
 		FileInputStream is = new FileInputStream(sotrePath);
 		ks.load(is, password.toCharArray());
@@ -258,12 +376,25 @@ public class EmayHttpLogic {
 		return ks;
 	}
 
+	/**
+	 * 设置Http请求的超时时间
+	 * 
+	 * @param conn
+	 * @param httpConnectionTimeOut
+	 * @param httpReadTimeOut
+	 */
 	private void fillTimeout(HttpURLConnection conn, int httpConnectionTimeOut, int httpReadTimeOut) {
 		conn.setConnectTimeout(httpConnectionTimeOut * 1000);
 		conn.setReadTimeout(httpReadTimeOut * 1000);
 	}
 
-	private void filleMethod(HttpURLConnection conn, EmayHttpMethod method){
+	/**
+	 * 设置Http请求的方法
+	 * 
+	 * @param conn
+	 * @param method
+	 */
+	private void filleMethod(HttpURLConnection conn, EmayHttpMethod method) {
 		try {
 			conn.setRequestMethod(method.toString());
 		} catch (ProtocolException e) {
@@ -271,6 +402,12 @@ public class EmayHttpLogic {
 		}
 	}
 
+	/**
+	 * 把Headers放入请求
+	 * 
+	 * @param conn
+	 * @param headers
+	 */
 	private void fillHeaders(HttpURLConnection conn, List<EmayHttpHeader> headers) {
 		if (headers == null || headers.isEmpty()) {
 			return;
@@ -280,10 +417,24 @@ public class EmayHttpLogic {
 		}
 	}
 
+	/**
+	 * 把Header放入请求
+	 * 
+	 * @param conn
+	 * @param key
+	 * @param value
+	 */
 	private void fillHeader(HttpURLConnection conn, String key, String value) {
 		conn.setRequestProperty(key, value);
 	}
 
+	/**
+	 * 把Cookies放入请求
+	 * 
+	 * @param conn
+	 * @param isHttps
+	 * @param cookies
+	 */
 	private void fillCookies(HttpURLConnection conn, boolean isHttps, List<EmayHttpCookie> cookies) {
 		if (cookies == null || cookies.isEmpty()) {
 			return;
@@ -302,36 +453,41 @@ public class EmayHttpLogic {
 		conn.setRequestProperty("Cookie", param);
 	}
 
-	private void request(HttpURLConnection conn, String charSet, EmayHttpMethod method, EmayHttpRequestData requestData) throws IOException{
-		if (EmayHttpMethod.POST.equals(method) || EmayHttpMethod.PUT.equals(method)) {
-			conn.setDoOutput(true);
-			if (requestData == null) {
-				conn.connect();
-				return;
+	/**
+	 * 请求
+	 * 
+	 * @param conn
+	 * @param requestData
+	 * @throws IOException
+	 */
+	private void request(HttpURLConnection conn, byte[] requestData) throws IOException {
+		conn.setDoOutput(true);
+		conn.connect();
+		if (requestData == null || requestData.length == 0) {
+			return;
+		}
+		fillHeader(conn, "Content-Length", String.valueOf(requestData.length));
+		DataOutputStream out = new DataOutputStream(conn.getOutputStream());
+		try {
+			out.write(requestData);
+			out.flush();
+		} catch (IOException e) {
+			throw e;
+		} finally {
+			if (out != null) {
+				out.close();
 			}
-			byte[] content = requestData.toBytes(charSet);
-			if (content == null || content.length == 0) {
-				conn.connect();
-				return;
-			}
-			int length = content.length;
-			fillHeader(conn, "Content-Length", String.valueOf(length));
-			DataOutputStream out = new DataOutputStream(conn.getOutputStream());
-			try {
-				out.write(content);
-				out.flush();
-			} catch (IOException e) {
-				throw e;
-			} finally {
-				if (out != null) {
-					out.close();
-				}
-			}
-		} else {
-			conn.connect();
 		}
 	}
 
+	/**
+	 * 从响应获取Headers
+	 * 
+	 * @param conn
+	 * @param charSet
+	 * @return
+	 * @throws UnsupportedEncodingException
+	 */
 	private List<EmayHttpHeader> getHeaders(HttpURLConnection conn, String charSet) throws UnsupportedEncodingException {
 		List<EmayHttpHeader> list = new ArrayList<EmayHttpHeader>();
 		Map<String, List<String>> headers = conn.getHeaderFields();
@@ -355,6 +511,14 @@ public class EmayHttpLogic {
 		return list;
 	}
 
+	/**
+	 * 从响应获取Cookies
+	 * 
+	 * @param conn
+	 * @param charSet
+	 * @return
+	 * @throws UnsupportedEncodingException
+	 */
 	private List<EmayHttpCookie> getCookies(HttpURLConnection conn, String charSet) throws UnsupportedEncodingException {
 		List<EmayHttpCookie> list = new ArrayList<EmayHttpCookie>();
 		Map<String, List<String>> headers = conn.getHeaderFields();
@@ -373,7 +537,14 @@ public class EmayHttpLogic {
 		return list;
 	}
 
-	private byte[] getResultOutputStream(HttpURLConnection conn) throws IOException {
+	/**
+	 * 从response输入流获取响应数据
+	 * 
+	 * @param conn
+	 * @return
+	 * @throws IOException
+	 */
+	private byte[] getResult(HttpURLConnection conn) throws IOException {
 		byte[] buffer = null;
 		int length = conn.getContentLength();
 		if (length <= 0) {

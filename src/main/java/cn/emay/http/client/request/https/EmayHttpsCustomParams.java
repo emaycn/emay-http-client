@@ -1,7 +1,7 @@
 package cn.emay.http.client.request.https;
 
 /**
- * https 参数
+ * https 自定义参数
  * 
  * @author Frank
  *

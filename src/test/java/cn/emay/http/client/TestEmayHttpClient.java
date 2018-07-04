@@ -10,6 +10,7 @@ public class TestEmayHttpClient {
 	@Test
 	public void testClient() {
 		
+		//URLENCODE POST/GET TEST
 
 		EmayHttpClient.openDebug();
 		

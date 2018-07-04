@@ -8,7 +8,7 @@ import cn.emay.http.client.common.EmayHttpHeader;
 import cn.emay.http.client.response.parser.EmayHttpResponseParser;
 
 /**
- * 解析String响应的解析器
+ * 解析响应为String的解析器
  * 
  * @author Frank
  *

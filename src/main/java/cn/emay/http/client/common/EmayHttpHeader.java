@@ -1,8 +1,20 @@
 package cn.emay.http.client.common;
 
+/**
+ * Http Header
+ * 
+ * @author Frank
+ *
+ */
 public class EmayHttpHeader {
 
+	/**
+	 * 名称
+	 */
 	private String name;
+	/**
+	 * 值
+	 */
 	private String value;
 
 	public EmayHttpHeader() {

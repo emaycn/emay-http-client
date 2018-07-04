@@ -25,11 +25,6 @@ public class EmayHttpRequestDataMap implements EmayHttpRequestData {
 	private byte[] contentBytes;
 
 	/**
-	 * 请求内容字符串
-	 */
-	private String contentString;
-
-	/**
 	 * 
 	 * @param data
 	 *            数据
@@ -38,11 +33,7 @@ public class EmayHttpRequestDataMap implements EmayHttpRequestData {
 		this.data = data;
 	}
 
-	@Override
-	public String toString(String charSet) {
-		if (contentString != null) {
-			return contentString;
-		}
+	private String toString(String charSet) {
 		if (data == null || data.isEmpty()) {
 			return null;
 		}
@@ -53,8 +44,7 @@ public class EmayHttpRequestDataMap implements EmayHttpRequestData {
 			}
 		}
 		String param = buffer.toString();
-		contentString = param.substring(0, param.length() - 1);
-		return contentString;
+		return param.substring(0, param.length() - 1);
 	}
 
 	@Override
@@ -62,7 +52,7 @@ public class EmayHttpRequestDataMap implements EmayHttpRequestData {
 		if (contentBytes != null) {
 			return contentBytes;
 		}
-		String paramStr = toString();
+		String paramStr = toString(charSet);
 		if (paramStr == null) {
 			return null;
 		}
