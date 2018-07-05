@@ -45,9 +45,10 @@ public class TestHttps {
 		HttpRequestData requestData = new HttpRequestDataMap(urlParams);
 
 		// 需要把证书导入密钥库，此处传入的是密钥库文件，而非证书
-		HttpsStoreParams customHttpsParams = new HttpsStoreParams("123456", "F:\\cacerts","F:\\cacerts", "JKS");
-		
-		HttpsCerParams cer = new HttpsCerParams("X.509", "F:\\tomcat.cer");
+		HttpsStoreParams customHttpsParams = new HttpsStoreParams("123456", "C:\\Program Files\\apache-tomcat-7.0.64\\secuitry\\cacerts",
+				"C:\\\\Program Files\\\\apache-tomcat-7.0.64\\\\secuitry\\\\cacerts", "JKS");
+
+		HttpsCerParams cer = new HttpsCerParams("X.509", "C:\\\\Program Files\\\\apache-tomcat-7.0.64\\\\secuitry\\\\tomcat.cer");
 
 		HttpResponse response = null;
 
