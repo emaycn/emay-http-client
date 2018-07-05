@@ -9,7 +9,6 @@ package cn.emay.http.client.common;
 public enum HttpResultCode {
 
 	SUCCESS("成功", "SUCCESS"), //
-	ERROR_CUSTOM_HTTPS_PAMARS("自定义HTTPS参数错误", "ERROR-CUSTOM-HTTPS-PAMARS"), //
 	ERROR_URL("URL访问失败", "ERROR-URL"), //
 	ERROR_HTTPS_SSL("HTTPS异常", "ERROR-HTTPS-SSL"), //
 	ERROR_CHARSET("编码错误", "ERROR-CHARSET"), //

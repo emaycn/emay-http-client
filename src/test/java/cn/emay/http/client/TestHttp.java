@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Map;
 
 import cn.emay.http.client.common.HttpHeader;
-import cn.emay.http.client.request.data.HttpRequestData;
-import cn.emay.http.client.request.data.impl.HttpRequestDataMap;
-import cn.emay.http.client.request.https.HttpsCustomParams;
+import cn.emay.http.client.https.HttpsStoreParams;
+import cn.emay.http.client.request.HttpRequestData;
+import cn.emay.http.client.request.impl.HttpRequestDataMap;
 import cn.emay.http.client.response.HttpResponse;
 import cn.emay.http.client.response.parser.impl.HttpResponseParserString;
 
@@ -41,7 +41,7 @@ public class TestHttp {
 
 		HttpRequestData requestData = new HttpRequestDataMap(urlParams);
 
-		HttpsCustomParams customHttpsParams = null;
+		HttpsStoreParams customHttpsParams = null;
 
 		HttpClient.openDebug();
 

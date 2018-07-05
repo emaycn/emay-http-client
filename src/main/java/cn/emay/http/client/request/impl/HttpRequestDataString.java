@@ -1,8 +1,8 @@
-package cn.emay.http.client.request.data.impl;
+package cn.emay.http.client.request.impl;
 
 import java.io.UnsupportedEncodingException;
 
-import cn.emay.http.client.request.data.HttpRequestData;
+import cn.emay.http.client.request.HttpRequestData;
 
 /**
  * Http 请求解析器：String

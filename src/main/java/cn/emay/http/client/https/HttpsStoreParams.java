@@ -1,12 +1,15 @@
-package cn.emay.http.client.request.https;
+package cn.emay.http.client.https;
 
 /**
- * https 自定义参数
+ * https 密钥信任库参数<br/>
+ * 拿到证书后，执行命令keytool -import -trustcacerts -alias xxxx -storepass yyyyy -file
+ * xxxx.cer -keystore cacerts把证书导入密钥库。<br/>
+ * 此处传入的是密钥库文件cacerts，而非证书
  * 
  * @author Frank
  *
  */
-public class HttpsCustomParams {
+public class HttpsStoreParams {
 
 	/**
 	 * 密钥
@@ -21,13 +24,11 @@ public class HttpsCustomParams {
 	 */
 	private String trustStorePath;
 	/**
-	 * 指定交换数字证书的加密标准:JKS
+	 * 指定交换数字证书的加密标准<br/>
+	 * 通用:pkcs12<br/>
+	 * JAVA自己定义的一种：JKS
 	 */
 	private String algorithm;
-
-	public HttpsCustomParams() {
-
-	}
 
 	/**
 	 * 
@@ -36,11 +37,13 @@ public class HttpsCustomParams {
 	 * @param keyStorePath
 	 *            密钥库文件地址
 	 * @param trustStorePath
-	 *            信任库文件地址
+	 *            信任库文件地址,一般于密钥库文件相同
 	 * @param algorithm
-	 *            指定交换数字证书的加密标准:JKS
+	 *            指定交换数字证书的加密标准<br/>
+	 *            通用:pkcs12<br/>
+	 *            JAVA自己定义的一种：JKS
 	 */
-	public HttpsCustomParams(String password, String keyStorePath, String trustStorePath, String algorithm) {
+	public HttpsStoreParams(String password, String keyStorePath, String trustStorePath, String algorithm) {
 		this.password = password;
 		this.keyStorePath = keyStorePath;
 		this.trustStorePath = trustStorePath;

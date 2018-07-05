@@ -1,4 +1,4 @@
-package cn.emay.http.client.request.data;
+package cn.emay.http.client.request;
 
 /**
  * 传输数据

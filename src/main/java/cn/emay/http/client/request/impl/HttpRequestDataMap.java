@@ -1,10 +1,10 @@
-package cn.emay.http.client.request.data.impl;
+package cn.emay.http.client.request.impl;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import cn.emay.http.client.request.data.HttpRequestData;
+import cn.emay.http.client.request.HttpRequestData;
 
 /**
  * Http 请求解析器：Map<String, String>

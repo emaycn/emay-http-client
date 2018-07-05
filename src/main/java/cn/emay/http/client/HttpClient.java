@@ -7,9 +7,10 @@ import java.util.Map.Entry;
 
 import cn.emay.http.client.common.HttpHeader;
 import cn.emay.http.client.common.HttpMethod;
+import cn.emay.http.client.https.HttpsCerParams;
+import cn.emay.http.client.https.HttpsStoreParams;
 import cn.emay.http.client.logic.HttpLogic;
-import cn.emay.http.client.request.data.HttpRequestData;
-import cn.emay.http.client.request.https.HttpsCustomParams;
+import cn.emay.http.client.request.HttpRequestData;
 import cn.emay.http.client.response.HttpResponse;
 
 /**
@@ -200,13 +201,39 @@ public class HttpClient {
 	 *            链接超时时间
 	 * @param readTimeOut
 	 *            读取数据超时时间
-	 * @param customHttpsParams
+	 * @param httpsStoreParams
 	 *            自定义Https证书相关参数
 	 * @return
 	 */
 	public static HttpResponse post(String url, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies, byte[] requestData, int connectionTimeOut, int readTimeOut,
-			HttpsCustomParams customHttpsParams) {
-		return HttpLogic.getInstance().service(url, HttpMethod.POST, charSet, headers, cookies, requestData, connectionTimeOut, readTimeOut, customHttpsParams);
+			HttpsStoreParams httpsStoreParams) {
+		return HttpLogic.getInstance().service(url, HttpMethod.POST, charSet, headers, cookies, requestData, connectionTimeOut, readTimeOut, httpsStoreParams);
+	}
+	
+	/**
+	 * post请求
+	 * 
+	 * @param url
+	 *            链接
+	 * @param charSet
+	 *            编码
+	 * @param headers
+	 *            Http头信息
+	 * @param cookies
+	 *            Cookie
+	 * @param requestData
+	 *            传输数据【Get可以不传】
+	 * @param connectionTimeOut
+	 *            链接超时时间
+	 * @param readTimeOut
+	 *            读取数据超时时间
+	 * @param httpsCerParams
+	 *            自定义Https证书参数
+	 * @return
+	 */
+	public static HttpResponse post(String url, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies, byte[] requestData, int connectionTimeOut, int readTimeOut,
+			HttpsCerParams httpsCerParams) {
+		return HttpLogic.getInstance().service(url, HttpMethod.POST, charSet, headers, cookies, requestData, connectionTimeOut, readTimeOut, httpsCerParams);
 	}
 
 	/**
@@ -226,13 +253,39 @@ public class HttpClient {
 	 *            链接超时时间
 	 * @param readTimeOut
 	 *            读取数据超时时间
-	 * @param customHttpsParams
+	 * @param httpsStoreParams
 	 *            自定义Https证书相关参数
 	 * @return
 	 */
 	public static HttpResponse post(String url, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies, HttpRequestData requestData, int connectionTimeOut, int readTimeOut,
-			HttpsCustomParams customHttpsParams) {
-		return HttpLogic.getInstance().service(url, HttpMethod.POST, charSet, headers, cookies, requestData.toBytes(charSet), connectionTimeOut, readTimeOut, customHttpsParams);
+			HttpsStoreParams httpsStoreParams) {
+		return HttpLogic.getInstance().service(url, HttpMethod.POST, charSet, headers, cookies, requestData.toBytes(charSet), connectionTimeOut, readTimeOut, httpsStoreParams);
+	}
+
+	/**
+	 * post请求
+	 * 
+	 * @param url
+	 *            链接
+	 * @param charSet
+	 *            编码
+	 * @param headers
+	 *            Http头信息
+	 * @param cookies
+	 *            Cookie
+	 * @param requestData
+	 *            传输数据【Get可以不传】
+	 * @param connectionTimeOut
+	 *            链接超时时间
+	 * @param readTimeOut
+	 *            读取数据超时时间
+	 * @param httpsCerParams
+	 *            自定义Https证书参数
+	 * @return
+	 */
+	public static HttpResponse post(String url, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies, HttpRequestData requestData, int connectionTimeOut, int readTimeOut,
+			HttpsCerParams httpsCerParams) {
+		return HttpLogic.getInstance().service(url, HttpMethod.POST, charSet, headers, cookies, requestData.toBytes(charSet), connectionTimeOut, readTimeOut, httpsCerParams);
 	}
 
 	/* get */
@@ -386,13 +439,39 @@ public class HttpClient {
 	 *            链接超时时间
 	 * @param readTimeOut
 	 *            读取数据超时时间
-	 * @param customHttpsParams
+	 * @param httpsStoreParams
 	 *            自定义Https证书相关参数
 	 * @return
 	 */
 	public static HttpResponse get(String baseUrl, Map<String, String> urlParams, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies, int connectionTimeOut, int readTimeOut,
-			HttpsCustomParams customHttpsParams) {
-		return HttpLogic.getInstance().service(genGetUrl(baseUrl, urlParams), HttpMethod.GET, charSet, headers, cookies, null, connectionTimeOut, readTimeOut, customHttpsParams);
+			HttpsStoreParams httpsStoreParams) {
+		return HttpLogic.getInstance().service(genGetUrl(baseUrl, urlParams), HttpMethod.GET, charSet, headers, cookies, null, connectionTimeOut, readTimeOut, httpsStoreParams);
+	}
+	
+	/**
+	 * get请求
+	 * 
+	 * @param baseUrl
+	 *            基础URL
+	 * @param urlParams
+	 *            URL参数
+	 * @param charSet
+	 *            编码
+	 * @param headers
+	 *            Http头信息
+	 * @param cookies
+	 *            Cookie
+	 * @param connectionTimeOut
+	 *            链接超时时间
+	 * @param readTimeOut
+	 *            读取数据超时时间
+	 * @param httpsCerParams
+	 *            自定义Https证书参数
+	 * @return
+	 */
+	public static HttpResponse get(String baseUrl, Map<String, String> urlParams, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies, int connectionTimeOut, int readTimeOut,
+			HttpsCerParams httpsCerParams) {
+		return HttpLogic.getInstance().service(genGetUrl(baseUrl, urlParams), HttpMethod.GET, charSet, headers, cookies, null, connectionTimeOut, readTimeOut, httpsCerParams);
 	}
 
 	/**
@@ -410,12 +489,35 @@ public class HttpClient {
 	 *            链接超时时间
 	 * @param readTimeOut
 	 *            读取数据超时时间
-	 * @param customHttpsParams
+	 * @param httpsStoreParams
 	 *            自定义Https证书相关参数
 	 * @return
 	 */
-	public static HttpResponse get(String url, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies, int connectionTimeOut, int readTimeOut, HttpsCustomParams customHttpsParams) {
-		return HttpLogic.getInstance().service(url, HttpMethod.GET, charSet, headers, cookies, null, connectionTimeOut, readTimeOut, customHttpsParams);
+	public static HttpResponse get(String url, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies, int connectionTimeOut, int readTimeOut, HttpsStoreParams httpsStoreParams) {
+		return HttpLogic.getInstance().service(url, HttpMethod.GET, charSet, headers, cookies, null, connectionTimeOut, readTimeOut, httpsStoreParams);
+	}
+
+	/**
+	 * get请求
+	 * 
+	 * @param url
+	 *            链接
+	 * @param charSet
+	 *            编码
+	 * @param headers
+	 *            Http头信息
+	 * @param cookies
+	 *            Cookie
+	 * @param connectionTimeOut
+	 *            链接超时时间
+	 * @param readTimeOut
+	 *            读取数据超时时间
+	 * @param httpsCerParams
+	 *            自定义Https证书参数
+	 * @return
+	 */
+	public static HttpResponse get(String url, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies, int connectionTimeOut, int readTimeOut, HttpsCerParams httpsCerParams) {
+		return HttpLogic.getInstance().service(url, HttpMethod.GET, charSet, headers, cookies, null, connectionTimeOut, readTimeOut, httpsCerParams);
 	}
 
 	/* service */
@@ -530,15 +632,43 @@ public class HttpClient {
 	 *            链接超时时间
 	 * @param readTimeOut
 	 *            读取数据超时时间
-	 * @param customHttpsParams
+	 * @param httpsStoreParams
 	 *            自定义Https证书相关参数
 	 * @return
 	 */
 	public static HttpResponse service(String url, HttpMethod method, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies, byte[] requestData, int connectionTimeOut, int readTimeOut,
-			HttpsCustomParams customHttpsParams) {
-		return HttpLogic.getInstance().service(url, method, charSet, headers, cookies, requestData, connectionTimeOut, readTimeOut, customHttpsParams);
+			HttpsStoreParams httpsStoreParams) {
+		return HttpLogic.getInstance().service(url, method, charSet, headers, cookies, requestData, connectionTimeOut, readTimeOut, httpsStoreParams);
 	}
 
+	/**
+	 * http请求
+	 * 
+	 * @param url
+	 *            链接
+	 * @param method
+	 *            方法
+	 * @param charSet
+	 *            编码
+	 * @param headers
+	 *            Http头信息
+	 * @param cookies
+	 *            Cookie
+	 * @param requestData
+	 *            传输数据【Get可以不传】
+	 * @param connectionTimeOut
+	 *            链接超时时间
+	 * @param readTimeOut
+	 *            读取数据超时时间
+	 * @param httpsCerParams
+	 *            自定义Https证书参数
+	 * @return
+	 */
+	public static HttpResponse service(String url, HttpMethod method, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies, byte[] requestData, int connectionTimeOut, int readTimeOut,
+			HttpsCerParams httpsCerParams) {
+		return HttpLogic.getInstance().service(url, method, charSet, headers, cookies, requestData, connectionTimeOut, readTimeOut, httpsCerParams);
+	}
+	
 	/* util */
 
 	/**

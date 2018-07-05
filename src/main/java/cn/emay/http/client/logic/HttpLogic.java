@@ -16,10 +16,14 @@ import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.security.UnrecoverableKeyException;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -39,7 +43,8 @@ import org.slf4j.LoggerFactory;
 import cn.emay.http.client.common.HttpHeader;
 import cn.emay.http.client.common.HttpMethod;
 import cn.emay.http.client.common.HttpResultCode;
-import cn.emay.http.client.request.https.HttpsCustomParams;
+import cn.emay.http.client.https.HttpsCerParams;
+import cn.emay.http.client.https.HttpsStoreParams;
 import cn.emay.http.client.response.HttpResponse;
 
 /**
@@ -100,7 +105,7 @@ public class HttpLogic {
 	 * @return
 	 */
 	public HttpResponse service(String url, HttpMethod method) {
-		return service(url, method, "UTF-8", null, null, null, 30, 30, null);
+		return service(url, method, "UTF-8", null, null, null, 30, 30, null, null);
 	}
 
 	/**
@@ -115,7 +120,7 @@ public class HttpLogic {
 	 * @return
 	 */
 	public HttpResponse service(String url, HttpMethod method, byte[] requestData) {
-		return service(url, method, "UTF-8", null, null, requestData, 30, 30, null);
+		return service(url, method, "UTF-8", null, null, requestData, 30, 30, null, null);
 	}
 
 	/**
@@ -132,7 +137,7 @@ public class HttpLogic {
 	 * @return
 	 */
 	public HttpResponse service(String url, HttpMethod method, String charSet, byte[] requestData) {
-		return service(url, method, charSet, null, null, requestData, 30, 30, null);
+		return service(url, method, charSet, null, null, requestData, 30, 30, null, null);
 	}
 
 	/**
@@ -153,7 +158,7 @@ public class HttpLogic {
 	 * @return
 	 */
 	public HttpResponse service(String url, HttpMethod method, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies, byte[] requestData) {
-		return service(url, method, charSet, headers, cookies, requestData, 30, 30, null);
+		return service(url, method, charSet, headers, cookies, requestData, 30, 30, null, null);
 	}
 
 	/**
@@ -178,7 +183,7 @@ public class HttpLogic {
 	 * @return
 	 */
 	public HttpResponse service(String url, HttpMethod method, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies, byte[] requestData, int connectionTimeOut, int readTimeOut) {
-		return service(url, method, charSet, headers, cookies, requestData, connectionTimeOut, readTimeOut, null);
+		return service(url, method, charSet, headers, cookies, requestData, connectionTimeOut, readTimeOut, null, null);
 	}
 
 	/**
@@ -200,24 +205,75 @@ public class HttpLogic {
 	 *            链接超时时间
 	 * @param readTimeOut
 	 *            读取数据超时时间
-	 * @param customHttpsParams
-	 *            自定义Https证书相关参数
+	 * @param httpsCerParams
+	 *            自定义Https证书参数
 	 * @return
 	 */
 	public HttpResponse service(String url, HttpMethod method, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies, byte[] requestData, int connectionTimeOut, int readTimeOut,
-			HttpsCustomParams customHttpsParams) {
+			HttpsCerParams httpsCerParams) {
+		return service(url, method, charSet, headers, cookies, requestData, connectionTimeOut, readTimeOut, httpsCerParams, null);
+	}
+
+	/**
+	 * http请求
+	 * 
+	 * @param url
+	 *            链接
+	 * @param method
+	 *            方法
+	 * @param charSet
+	 *            编码
+	 * @param headers
+	 *            Http头信息
+	 * @param cookies
+	 *            Cookie
+	 * @param requestData
+	 *            传输数据【Get可以不传】
+	 * @param connectionTimeOut
+	 *            链接超时时间
+	 * @param readTimeOut
+	 *            读取数据超时时间
+	 * @param httpsStoreParams
+	 *            自定义Https密钥库参数
+	 * @return
+	 */
+	public HttpResponse service(String url, HttpMethod method, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies, byte[] requestData, int connectionTimeOut, int readTimeOut,
+			HttpsStoreParams httpsStoreParams) {
+		return service(url, method, charSet, headers, cookies, requestData, connectionTimeOut, readTimeOut, null, httpsStoreParams);
+	}
+
+	/**
+	 * http请求
+	 * 
+	 * @param url
+	 *            链接
+	 * @param method
+	 *            方法
+	 * @param charSet
+	 *            编码
+	 * @param headers
+	 *            Http头信息
+	 * @param cookies
+	 *            Cookie
+	 * @param requestData
+	 *            传输数据【Get可以不传】
+	 * @param connectionTimeOut
+	 *            链接超时时间
+	 * @param readTimeOut
+	 *            读取数据超时时间
+	 * @param httpsCerParams
+	 *            自定义Https证书参数[与httpsCerParams二选一]，此参数优先
+	 * @param HttpsStoreParams
+	 *            自定义Https密钥库参数[与HttpsStoreParams二选一]
+	 * @return
+	 */
+	public HttpResponse service(String url, HttpMethod method, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies, byte[] requestData, int connectionTimeOut, int readTimeOut,
+			HttpsCerParams httpsCerParams, HttpsStoreParams httpsStoreParams) {
 		HttpResponse response = null;
 		if (url == null || url.length() == 0) {
 			response = new HttpResponse(HttpResultCode.ERROR_URL, -1, null, null, null, null);
 			if (debug) {
 				logger.error("url is null");
-			}
-			return response;
-		}
-		if (customHttpsParams != null && !customHttpsParams.isValid()) {
-			response = new HttpResponse(HttpResultCode.ERROR_CUSTOM_HTTPS_PAMARS, -1, null, null, null, null);
-			if (debug) {
-				logger.error("customHttpsParams error");
 			}
 			return response;
 		}
@@ -230,10 +286,10 @@ public class HttpLogic {
 			url0 = url;
 			isHttps0 = true;
 		} else {
-			if(customHttpsParams == null) {
+			if (httpsStoreParams == null && httpsCerParams == null) {
 				url0 = "http://" + url;
 				isHttps0 = false;
-			}else {
+			} else {
 				url0 = "https://" + url;
 				isHttps0 = true;
 			}
@@ -244,11 +300,12 @@ public class HttpLogic {
 		int readTimeOut0 = readTimeOut > 0 ? readTimeOut : 30;
 		List<HttpHeader> headers0 = headers;
 		List<HttpCookie> cookies0 = cookies;
-		HttpsCustomParams customHttpsParams0 = customHttpsParams;
+		HttpsStoreParams httpsStoreParams0 = httpsStoreParams;
+		HttpsCerParams httpsCerParams0 = httpsCerParams;
 
 		HttpURLConnection conn0 = null;
 		try {
-			conn0 = createConnection(url0, isHttps0, customHttpsParams0);
+			conn0 = createConnection(url0, isHttps0, httpsCerParams0, httpsStoreParams0);
 			fillTimeout(conn0, connectionTimeOut0, readTimeOut0);
 			filleMethod(conn0, method0);
 			fillHeaders(conn0, headers0);
@@ -315,20 +372,39 @@ public class HttpLogic {
 	 * @throws KeyStoreException
 	 * @throws CertificateException
 	 */
-	private HttpURLConnection createConnection(String url, boolean isHttps, HttpsCustomParams httpsParams)
+	private HttpURLConnection createConnection(String url, boolean isHttps, HttpsCerParams httpsCerParams, HttpsStoreParams httpsStoreParams)
 			throws NoSuchAlgorithmException, KeyManagementException, MalformedURLException, IOException, UnrecoverableKeyException, KeyStoreException, CertificateException {
 		HttpURLConnection conn = null;
 		URL console = new URL(url);
 		if (isHttps) {
 			SSLContext ctx = SSLContext.getInstance("TLS");
-			if (httpsParams != null) {
+			if (httpsCerParams != null) {
+				InputStream cerInputStream = new FileInputStream(httpsCerParams.getCerPath());
+				CertificateFactory certificateFactory = CertificateFactory.getInstance(httpsCerParams.getType());
+				Collection<? extends Certificate> certificates = certificateFactory.generateCertificates(cerInputStream);
+				KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+				keyStore.load(null, null);
+				int index = 0;
+				if (null != certificates) {
+					for (Certificate certificate : certificates) {
+						String certificateAlias = Integer.toString(index++);
+						keyStore.setCertificateEntry(certificateAlias, certificate);
+					}
+				}
+				cerInputStream.close();
+				KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+				keyManagerFactory.init(keyStore, null);
+				TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+				trustManagerFactory.init(keyStore);
+				ctx.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), new SecureRandom());
+			} else if (httpsStoreParams != null) {
 				KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
 				TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-				KeyStore keyStore = getKeyStore(httpsParams.getPassword(), httpsParams.getAlgorithm(), httpsParams.getKeyStorePath());
-				keyManagerFactory.init(keyStore, httpsParams.getPassword().toCharArray());
-				KeyStore trustStore = getKeyStore(httpsParams.getPassword(), httpsParams.getAlgorithm(), httpsParams.getTrustStorePath());
+				KeyStore keyStore = getKeyStore(httpsStoreParams.getPassword(), httpsStoreParams.getAlgorithm(), httpsStoreParams.getKeyStorePath());
+				keyManagerFactory.init(keyStore, httpsStoreParams.getPassword().toCharArray());
+				KeyStore trustStore = getKeyStore(httpsStoreParams.getPassword(), httpsStoreParams.getAlgorithm(), httpsStoreParams.getTrustStorePath());
 				trustManagerFactory.init(trustStore);
-				ctx.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), new java.security.SecureRandom());
+				ctx.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), new SecureRandom());
 			} else {
 				ctx.init(null, new TrustManager[] { new X509TrustManager() {
 					@Override

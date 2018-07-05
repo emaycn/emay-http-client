@@ -9,9 +9,10 @@ import java.util.List;
 import java.util.Map;
 
 import cn.emay.http.client.common.HttpHeader;
-import cn.emay.http.client.request.data.HttpRequestData;
-import cn.emay.http.client.request.data.impl.HttpRequestDataMap;
-import cn.emay.http.client.request.https.HttpsCustomParams;
+import cn.emay.http.client.https.HttpsCerParams;
+import cn.emay.http.client.https.HttpsStoreParams;
+import cn.emay.http.client.request.HttpRequestData;
+import cn.emay.http.client.request.impl.HttpRequestDataMap;
 import cn.emay.http.client.response.HttpResponse;
 import cn.emay.http.client.response.parser.impl.HttpResponseParserString;
 
@@ -19,9 +20,11 @@ public class TestHttps {
 
 	public static void main(String[] args) throws UnsupportedEncodingException {
 
+		HttpClient.openDebug();
+
 		String charSet = "UTF-8";
 
-		String baseUrl = "127.0.0.1:8999/test1";
+		String baseUrl = "https://sdx-st.com/hello.html";
 		Map<String, String> urlParams = new HashMap<>();
 		urlParams.put("key1", URLEncoder.encode("vv1&s=s", charSet));
 		urlParams.put(URLEncoder.encode("key2&s=s", charSet), "vv2");
@@ -41,16 +44,17 @@ public class TestHttps {
 
 		HttpRequestData requestData = new HttpRequestDataMap(urlParams);
 
-		HttpsCustomParams customHttpsParams = null;
-
-		HttpClient.openDebug();
+		// 需要把证书导入密钥库，此处传入的是密钥库文件，而非证书
+		HttpsStoreParams customHttpsParams = new HttpsStoreParams("123456", "F:\\cacerts","F:\\cacerts", "JKS");
+		
+		HttpsCerParams cer = new HttpsCerParams("X.509", "F:\\tomcat.cer");
 
 		HttpResponse response = null;
 
 		response = HttpClient.get(url, charSet, headers, cookies, connectionTimeOut, readTimeOut, customHttpsParams);
 		parse(response, charSet);
 
-		response = HttpClient.post(baseUrl, charSet, headers, cookies, requestData, connectionTimeOut, readTimeOut, customHttpsParams);
+		response = HttpClient.post(baseUrl, charSet, headers, cookies, requestData, connectionTimeOut, readTimeOut, cer);
 		parse(response, charSet);
 	}
 
