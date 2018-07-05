@@ -1,5 +1,6 @@
 package cn.emay.http.client.logic;
 
+import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -229,8 +230,13 @@ public class HttpLogic {
 			url0 = url;
 			isHttps0 = true;
 		} else {
-			url0 = "http://" + url;
-			isHttps0 = false;
+			if(customHttpsParams == null) {
+				url0 = "http://" + url;
+				isHttps0 = false;
+			}else {
+				url0 = "https://" + url;
+				isHttps0 = true;
+			}
 		}
 		HttpMethod method0 = method != null ? method : HttpMethod.GET;
 		String charSet0 = charSet != null ? charSet : "UTF-8";
@@ -461,11 +467,12 @@ public class HttpLogic {
 	 */
 	private void request(HttpURLConnection conn, byte[] requestData) throws IOException {
 		conn.setDoOutput(true);
-		conn.connect();
 		if (requestData == null || requestData.length == 0) {
+			conn.connect();
 			return;
 		}
 		fillHeader(conn, "Content-Length", String.valueOf(requestData.length));
+		conn.connect();
 		DataOutputStream out = new DataOutputStream(conn.getOutputStream());
 		try {
 			out.write(requestData);
@@ -545,19 +552,31 @@ public class HttpLogic {
 	 */
 	private byte[] getResult(HttpURLConnection conn) throws IOException {
 		byte[] buffer = null;
-		int length = conn.getContentLength();
-		if (length <= 0) {
+		InputStream is = conn.getInputStream();
+		if (is == null) {
 			return buffer;
 		}
-		buffer = new byte[length];
-		InputStream is = conn.getInputStream();
-		if (is != null) {
-			try {
+		ByteArrayOutputStream outStream = null;
+		int length = conn.getContentLength();
+		try {
+			if (length <= 0) {
+				outStream = new ByteArrayOutputStream();
+				byte[] buffer0 = new byte[1024];
+				int len = 0;
+				while ((len = is.read(buffer0)) != -1) {
+					outStream.write(buffer0, 0, len);
+				}
+				buffer = outStream.toByteArray();
+			} else {
+				buffer = new byte[length];
 				is.read(buffer);
-			} catch (IOException e) {
-				throw e;
-			} finally {
-				is.close();
+			}
+		} catch (IOException e) {
+			throw e;
+		} finally {
+			is.close();
+			if (outStream != null) {
+				outStream.close();
 			}
 		}
 		return buffer;

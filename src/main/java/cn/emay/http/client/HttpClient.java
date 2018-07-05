@@ -15,9 +15,10 @@ import cn.emay.http.client.response.HttpResponse;
 /**
  * EMAY http客户端<br/>
  * <br/>
- * 1.不进行URLENCODE，需要自己处理<br/>
- * 2.链接、读数据超时时间默认均为30秒<br/>
- * 3.默认编码为UTF-8<br/>
+ * 1.链接、读数据超时时间默认均为30秒<br/>
+ * 2.默认编码为UTF-8<br/>
+ * 3.提示：传输的数据注意进行UrlEncode<br/>
+ * 4.提示：发送请求时，header会被服务端去重；接收响应时，cookie会被客户端去重；
  * 
  * @author Frank
  *
@@ -178,8 +179,7 @@ public class HttpClient {
 	 *            读取数据超时时间
 	 * @return
 	 */
-	public static HttpResponse post(String url, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies, HttpRequestData requestData, int connectionTimeOut,
-			int readTimeOut) {
+	public static HttpResponse post(String url, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies, HttpRequestData requestData, int connectionTimeOut, int readTimeOut) {
 		return HttpLogic.getInstance().service(url, HttpMethod.POST, charSet, headers, cookies, requestData.toBytes(charSet), connectionTimeOut, readTimeOut);
 	}
 
@@ -344,8 +344,7 @@ public class HttpClient {
 	 *            读取数据超时时间
 	 * @return
 	 */
-	public static HttpResponse get(String baseUrl, Map<String, String> urlParams, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies, int connectionTimeOut,
-			int readTimeOut) {
+	public static HttpResponse get(String baseUrl, Map<String, String> urlParams, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies, int connectionTimeOut, int readTimeOut) {
 		return HttpLogic.getInstance().service(genGetUrl(baseUrl, urlParams), HttpMethod.GET, charSet, headers, cookies, null, connectionTimeOut, readTimeOut);
 	}
 
@@ -391,8 +390,8 @@ public class HttpClient {
 	 *            自定义Https证书相关参数
 	 * @return
 	 */
-	public static HttpResponse get(String baseUrl, Map<String, String> urlParams, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies, int connectionTimeOut,
-			int readTimeOut, HttpsCustomParams customHttpsParams) {
+	public static HttpResponse get(String baseUrl, Map<String, String> urlParams, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies, int connectionTimeOut, int readTimeOut,
+			HttpsCustomParams customHttpsParams) {
 		return HttpLogic.getInstance().service(genGetUrl(baseUrl, urlParams), HttpMethod.GET, charSet, headers, cookies, null, connectionTimeOut, readTimeOut, customHttpsParams);
 	}
 
@@ -415,8 +414,7 @@ public class HttpClient {
 	 *            自定义Https证书相关参数
 	 * @return
 	 */
-	public static HttpResponse get(String url, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies, int connectionTimeOut, int readTimeOut,
-			HttpsCustomParams customHttpsParams) {
+	public static HttpResponse get(String url, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies, int connectionTimeOut, int readTimeOut, HttpsCustomParams customHttpsParams) {
 		return HttpLogic.getInstance().service(url, HttpMethod.GET, charSet, headers, cookies, null, connectionTimeOut, readTimeOut, customHttpsParams);
 	}
 
@@ -509,8 +507,7 @@ public class HttpClient {
 	 *            读取数据超时时间
 	 * @return
 	 */
-	public static HttpResponse service(String url, HttpMethod method, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies, byte[] requestData, int connectionTimeOut,
-			int readTimeOut) {
+	public static HttpResponse service(String url, HttpMethod method, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies, byte[] requestData, int connectionTimeOut, int readTimeOut) {
 		return HttpLogic.getInstance().service(url, method, charSet, headers, cookies, requestData, connectionTimeOut, readTimeOut);
 	}
 
@@ -537,8 +534,8 @@ public class HttpClient {
 	 *            自定义Https证书相关参数
 	 * @return
 	 */
-	public static HttpResponse service(String url, HttpMethod method, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies, byte[] requestData, int connectionTimeOut,
-			int readTimeOut, HttpsCustomParams customHttpsParams) {
+	public static HttpResponse service(String url, HttpMethod method, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies, byte[] requestData, int connectionTimeOut, int readTimeOut,
+			HttpsCustomParams customHttpsParams) {
 		return HttpLogic.getInstance().service(url, method, charSet, headers, cookies, requestData, connectionTimeOut, readTimeOut, customHttpsParams);
 	}
 
@@ -560,13 +557,12 @@ public class HttpClient {
 		StringBuffer buffer = new StringBuffer();
 		for (Entry<String, String> entry : urlParams.entrySet()) {
 			if (entry.getValue() != null) {
-				String value = entry.getValue();
-				buffer.append(entry.getKey()).append("=").append(value).append("&");
+				buffer.append(entry.getKey()).append("=").append(entry.getValue()).append("&");
 			}
 		}
 		String param = buffer.toString();
 		String getprams = param.substring(0, param.length() - 1);
-		if (getprams == null || !"".equalsIgnoreCase(getprams)) {
+		if (getprams == null || "".equalsIgnoreCase(getprams)) {
 			return baseUrl;
 		}
 		if (baseUrl.indexOf("?") > 0) {
