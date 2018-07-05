@@ -1,11 +1,11 @@
 package cn.emay.http.client.response.parser.impl;
 
 import java.io.UnsupportedEncodingException;
+import java.net.HttpCookie;
 import java.util.List;
 
-import cn.emay.http.client.common.EmayHttpCookie;
-import cn.emay.http.client.common.EmayHttpHeader;
-import cn.emay.http.client.response.parser.EmayHttpResponseParser;
+import cn.emay.http.client.common.HttpHeader;
+import cn.emay.http.client.response.parser.HttpResponseParser;
 
 /**
  * 解析响应为String的解析器
@@ -13,10 +13,10 @@ import cn.emay.http.client.response.parser.EmayHttpResponseParser;
  * @author Frank
  *
  */
-public class EmayHttpResponseParserString implements EmayHttpResponseParser<String> {
+public class HttpResponseParserString implements HttpResponseParser<String> {
 
 	@Override
-	public String parseData(int httpCode, List<EmayHttpHeader> headers, List<EmayHttpCookie> cookies, String charSet, byte[] data) {
+	public String parseData(int httpCode, List<HttpHeader> headers, List<HttpCookie> cookies, String charSet, byte[] data) {
 		if (data == null) {
 			return null;
 		}

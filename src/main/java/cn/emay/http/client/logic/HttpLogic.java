@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpCookie;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
@@ -34,12 +35,11 @@ import javax.net.ssl.X509TrustManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cn.emay.http.client.common.EmayHttpCookie;
-import cn.emay.http.client.common.EmayHttpHeader;
-import cn.emay.http.client.common.EmayHttpMethod;
-import cn.emay.http.client.common.EmayHttpResultCode;
-import cn.emay.http.client.request.https.EmayHttpsCustomParams;
-import cn.emay.http.client.response.EmayHttpResponse;
+import cn.emay.http.client.common.HttpHeader;
+import cn.emay.http.client.common.HttpMethod;
+import cn.emay.http.client.common.HttpResultCode;
+import cn.emay.http.client.request.https.HttpsCustomParams;
+import cn.emay.http.client.response.HttpResponse;
 
 /**
  * Http请求逻辑<br/>
@@ -47,9 +47,9 @@ import cn.emay.http.client.response.EmayHttpResponse;
  * @author Frank
  *
  */
-public class EmayHttpLogic {
+public class HttpLogic {
 
-	private Logger logger = LoggerFactory.getLogger(EmayHttpLogic.class);
+	private Logger logger = LoggerFactory.getLogger(HttpLogic.class);
 
 	/**
 	 * 是否DEBUG
@@ -59,19 +59,19 @@ public class EmayHttpLogic {
 	/**
 	 * 单例
 	 */
-	private static EmayHttpLogic LOGIC = new EmayHttpLogic();
+	private static HttpLogic LOGIC = new HttpLogic();
 
 	/**
 	 * 单例
 	 */
-	private EmayHttpLogic() {
+	private HttpLogic() {
 
 	}
 
 	/**
 	 * 获取单例
 	 */
-	public static EmayHttpLogic getInstance() {
+	public static HttpLogic getInstance() {
 		return LOGIC;
 	}
 
@@ -98,7 +98,7 @@ public class EmayHttpLogic {
 	 *            方法
 	 * @return
 	 */
-	public EmayHttpResponse service(String url, EmayHttpMethod method) {
+	public HttpResponse service(String url, HttpMethod method) {
 		return service(url, method, "UTF-8", null, null, null, 30, 30, null);
 	}
 
@@ -113,7 +113,7 @@ public class EmayHttpLogic {
 	 *            传输数据【Get可以不传】
 	 * @return
 	 */
-	public EmayHttpResponse service(String url, EmayHttpMethod method, byte[] requestData) {
+	public HttpResponse service(String url, HttpMethod method, byte[] requestData) {
 		return service(url, method, "UTF-8", null, null, requestData, 30, 30, null);
 	}
 
@@ -130,7 +130,7 @@ public class EmayHttpLogic {
 	 *            传输数据【Get可以不传】
 	 * @return
 	 */
-	public EmayHttpResponse service(String url, EmayHttpMethod method, String charSet, byte[] requestData) {
+	public HttpResponse service(String url, HttpMethod method, String charSet, byte[] requestData) {
 		return service(url, method, charSet, null, null, requestData, 30, 30, null);
 	}
 
@@ -151,7 +151,7 @@ public class EmayHttpLogic {
 	 *            传输数据【Get可以不传】
 	 * @return
 	 */
-	public EmayHttpResponse service(String url, EmayHttpMethod method, String charSet, List<EmayHttpHeader> headers, List<EmayHttpCookie> cookies, byte[] requestData) {
+	public HttpResponse service(String url, HttpMethod method, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies, byte[] requestData) {
 		return service(url, method, charSet, headers, cookies, requestData, 30, 30, null);
 	}
 
@@ -176,8 +176,7 @@ public class EmayHttpLogic {
 	 *            读取数据超时时间
 	 * @return
 	 */
-	public EmayHttpResponse service(String url, EmayHttpMethod method, String charSet, List<EmayHttpHeader> headers, List<EmayHttpCookie> cookies, byte[] requestData, int connectionTimeOut,
-			int readTimeOut) {
+	public HttpResponse service(String url, HttpMethod method, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies, byte[] requestData, int connectionTimeOut, int readTimeOut) {
 		return service(url, method, charSet, headers, cookies, requestData, connectionTimeOut, readTimeOut, null);
 	}
 
@@ -204,18 +203,18 @@ public class EmayHttpLogic {
 	 *            自定义Https证书相关参数
 	 * @return
 	 */
-	public EmayHttpResponse service(String url, EmayHttpMethod method, String charSet, List<EmayHttpHeader> headers, List<EmayHttpCookie> cookies, byte[] requestData, int connectionTimeOut,
-			int readTimeOut, EmayHttpsCustomParams customHttpsParams) {
-		EmayHttpResponse response = null;
+	public HttpResponse service(String url, HttpMethod method, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies, byte[] requestData, int connectionTimeOut, int readTimeOut,
+			HttpsCustomParams customHttpsParams) {
+		HttpResponse response = null;
 		if (url == null || url.length() == 0) {
-			response = new EmayHttpResponse(EmayHttpResultCode.ERROR_URL, -1, null, null, null, null);
+			response = new HttpResponse(HttpResultCode.ERROR_URL, -1, null, null, null, null);
 			if (debug) {
 				logger.error("url is null");
 			}
 			return response;
 		}
 		if (customHttpsParams != null && !customHttpsParams.isValid()) {
-			response = new EmayHttpResponse(EmayHttpResultCode.ERROR_CUSTOM_HTTPS_PAMARS, -1, null, null, null, null);
+			response = new HttpResponse(HttpResultCode.ERROR_CUSTOM_HTTPS_PAMARS, -1, null, null, null, null);
 			if (debug) {
 				logger.error("customHttpsParams error");
 			}
@@ -233,13 +232,13 @@ public class EmayHttpLogic {
 			url0 = "http://" + url;
 			isHttps0 = false;
 		}
-		EmayHttpMethod method0 = method != null ? method : EmayHttpMethod.GET;
+		HttpMethod method0 = method != null ? method : HttpMethod.GET;
 		String charSet0 = charSet != null ? charSet : "UTF-8";
 		int connectionTimeOut0 = connectionTimeOut > 0 ? connectionTimeOut : 30;
 		int readTimeOut0 = readTimeOut > 0 ? readTimeOut : 30;
-		List<EmayHttpHeader> headers0 = headers;
-		List<EmayHttpCookie> cookies0 = cookies;
-		EmayHttpsCustomParams customHttpsParams0 = customHttpsParams;
+		List<HttpHeader> headers0 = headers;
+		List<HttpCookie> cookies0 = cookies;
+		HttpsCustomParams customHttpsParams0 = customHttpsParams;
 
 		HttpURLConnection conn0 = null;
 		try {
@@ -250,30 +249,30 @@ public class EmayHttpLogic {
 			fillCookies(conn0, isHttps0, cookies0);
 			request(conn0, requestData);
 			int httpCode0 = conn0.getResponseCode();
-			List<EmayHttpHeader> responseHeaders0 = this.getHeaders(conn0, charSet0);
-			List<EmayHttpCookie> responseCookies0 = this.getCookies(conn0, charSet0);
+			List<HttpHeader> responseHeaders0 = this.getHeaders(conn0, charSet0);
+			List<HttpCookie> responseCookies0 = this.getCookies(conn0, charSet0);
 			byte[] responseData0 = this.getResult(conn0);
-			response = new EmayHttpResponse(EmayHttpResultCode.SUCCESS, httpCode0, responseHeaders0, responseCookies0, responseData0, null);
+			response = new HttpResponse(HttpResultCode.SUCCESS, httpCode0, responseHeaders0, responseCookies0, responseData0, null);
 		} catch (SocketTimeoutException e) {
-			response = new EmayHttpResponse(EmayHttpResultCode.ERROR_TIMEOUT, -1, null, null, null, e);
+			response = new HttpResponse(HttpResultCode.ERROR_TIMEOUT, -1, null, null, null, e);
 		} catch (KeyManagementException e) {
-			response = new EmayHttpResponse(EmayHttpResultCode.ERROR_HTTPS_SSL, -1, null, null, null, e);
+			response = new HttpResponse(HttpResultCode.ERROR_HTTPS_SSL, -1, null, null, null, e);
 		} catch (NoSuchAlgorithmException e) {
-			response = new EmayHttpResponse(EmayHttpResultCode.ERROR_HTTPS_SSL, -1, null, null, null, e);
+			response = new HttpResponse(HttpResultCode.ERROR_HTTPS_SSL, -1, null, null, null, e);
 		} catch (UnsupportedEncodingException e) {
-			response = new EmayHttpResponse(EmayHttpResultCode.ERROR_CHARSET, -1, null, null, null, e);
+			response = new HttpResponse(HttpResultCode.ERROR_CHARSET, -1, null, null, null, e);
 		} catch (MalformedURLException e) {
-			response = new EmayHttpResponse(EmayHttpResultCode.ERROR_URL, -1, null, null, null, e);
+			response = new HttpResponse(HttpResultCode.ERROR_URL, -1, null, null, null, e);
 		} catch (IOException e) {
-			response = new EmayHttpResponse(EmayHttpResultCode.ERROR_CONNECT, -1, null, null, null, e);
+			response = new HttpResponse(HttpResultCode.ERROR_CONNECT, -1, null, null, null, e);
 		} catch (UnrecoverableKeyException e) {
-			response = new EmayHttpResponse(EmayHttpResultCode.ERROR_HTTPS_SSL, -1, null, null, null, e);
+			response = new HttpResponse(HttpResultCode.ERROR_HTTPS_SSL, -1, null, null, null, e);
 		} catch (KeyStoreException e) {
-			response = new EmayHttpResponse(EmayHttpResultCode.ERROR_HTTPS_SSL, -1, null, null, null, e);
+			response = new HttpResponse(HttpResultCode.ERROR_HTTPS_SSL, -1, null, null, null, e);
 		} catch (CertificateException e) {
-			response = new EmayHttpResponse(EmayHttpResultCode.ERROR_HTTPS_SSL, -1, null, null, null, e);
+			response = new HttpResponse(HttpResultCode.ERROR_HTTPS_SSL, -1, null, null, null, e);
 		} catch (Throwable e) {
-			response = new EmayHttpResponse(EmayHttpResultCode.ERROR_OTHER, -1, null, null, null, e);
+			response = new HttpResponse(HttpResultCode.ERROR_OTHER, -1, null, null, null, e);
 		} finally {
 			if (conn0 != null) {
 				try {
@@ -310,7 +309,7 @@ public class EmayHttpLogic {
 	 * @throws KeyStoreException
 	 * @throws CertificateException
 	 */
-	private HttpURLConnection createConnection(String url, boolean isHttps, EmayHttpsCustomParams httpsParams)
+	private HttpURLConnection createConnection(String url, boolean isHttps, HttpsCustomParams httpsParams)
 			throws NoSuchAlgorithmException, KeyManagementException, MalformedURLException, IOException, UnrecoverableKeyException, KeyStoreException, CertificateException {
 		HttpURLConnection conn = null;
 		URL console = new URL(url);
@@ -394,7 +393,7 @@ public class EmayHttpLogic {
 	 * @param conn
 	 * @param method
 	 */
-	private void filleMethod(HttpURLConnection conn, EmayHttpMethod method) {
+	private void filleMethod(HttpURLConnection conn, HttpMethod method) {
 		try {
 			conn.setRequestMethod(method.toString());
 		} catch (ProtocolException e) {
@@ -408,11 +407,11 @@ public class EmayHttpLogic {
 	 * @param conn
 	 * @param headers
 	 */
-	private void fillHeaders(HttpURLConnection conn, List<EmayHttpHeader> headers) {
+	private void fillHeaders(HttpURLConnection conn, List<HttpHeader> headers) {
 		if (headers == null || headers.isEmpty()) {
 			return;
 		}
-		for (EmayHttpHeader entry : headers) {
+		for (HttpHeader entry : headers) {
 			fillHeader(conn, entry.getName(), entry.getValue());
 		}
 	}
@@ -435,17 +434,17 @@ public class EmayHttpLogic {
 	 * @param isHttps
 	 * @param cookies
 	 */
-	private void fillCookies(HttpURLConnection conn, boolean isHttps, List<EmayHttpCookie> cookies) {
+	private void fillCookies(HttpURLConnection conn, boolean isHttps, List<HttpCookie> cookies) {
 		if (cookies == null || cookies.isEmpty()) {
 			return;
 		}
 		StringBuffer buffer = new StringBuffer();
-		for (EmayHttpCookie cookie : cookies) {
+		for (HttpCookie cookie : cookies) {
 			if (cookie.getName() != null && cookie.getValue() != null) {
-				if (cookie.isSecure() && !isHttps) {
+				if (cookie.getSecure() && !isHttps) {
 					continue;
 				}
-				buffer.append(cookie.getName()).append("=").append(cookie.getValue()).append(";");
+				buffer.append(cookie.toString()).append(";");
 			}
 		}
 		String param = buffer.toString();
@@ -488,8 +487,8 @@ public class EmayHttpLogic {
 	 * @return
 	 * @throws UnsupportedEncodingException
 	 */
-	private List<EmayHttpHeader> getHeaders(HttpURLConnection conn, String charSet) throws UnsupportedEncodingException {
-		List<EmayHttpHeader> list = new ArrayList<EmayHttpHeader>();
+	private List<HttpHeader> getHeaders(HttpURLConnection conn, String charSet) throws UnsupportedEncodingException {
+		List<HttpHeader> list = new ArrayList<HttpHeader>();
 		Map<String, List<String>> headers = conn.getHeaderFields();
 		if (headers == null || headers.isEmpty()) {
 			return list;
@@ -504,7 +503,7 @@ public class EmayHttpLogic {
 			String name = entry.getKey();
 			for (String value : entry.getValue()) {
 				String value0 = new String(value.getBytes("ISO-8859-1"), charSet);
-				list.add(new EmayHttpHeader(name, value0));
+				list.add(new HttpHeader(name, value0));
 
 			}
 		}
@@ -519,8 +518,8 @@ public class EmayHttpLogic {
 	 * @return
 	 * @throws UnsupportedEncodingException
 	 */
-	private List<EmayHttpCookie> getCookies(HttpURLConnection conn, String charSet) throws UnsupportedEncodingException {
-		List<EmayHttpCookie> list = new ArrayList<EmayHttpCookie>();
+	private List<HttpCookie> getCookies(HttpURLConnection conn, String charSet) throws UnsupportedEncodingException {
+		List<HttpCookie> list = new ArrayList<HttpCookie>();
 		Map<String, List<String>> headers = conn.getHeaderFields();
 		if (headers == null || headers.isEmpty()) {
 			return list;
@@ -531,7 +530,7 @@ public class EmayHttpLogic {
 		}
 		for (String value : cookies) {
 			String value0 = new String(value.getBytes("ISO-8859-1"), charSet);
-			list.add(new EmayHttpCookie(value0));
+			list.addAll(HttpCookie.parse(value0));
 
 		}
 		return list;

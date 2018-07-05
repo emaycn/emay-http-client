@@ -6,7 +6,7 @@ package cn.emay.http.client.common;
  * @author Frank
  *
  */
-public class EmayHttpHeader {
+public class HttpHeader {
 
 	/**
 	 * 名称
@@ -17,7 +17,7 @@ public class EmayHttpHeader {
 	 */
 	private String value;
 
-	public EmayHttpHeader() {
+	public HttpHeader() {
 
 	}
 
@@ -28,7 +28,7 @@ public class EmayHttpHeader {
 	 * @param value
 	 *            值
 	 */
-	public EmayHttpHeader(String name, String value) {
+	public HttpHeader(String name, String value) {
 		this.name = name;
 		this.value = value;
 	}

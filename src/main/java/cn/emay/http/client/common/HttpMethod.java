@@ -6,7 +6,7 @@ package cn.emay.http.client.common;
  * @author Frank
  *
  */
-public enum EmayHttpMethod {
+public enum HttpMethod {
 
 	GET, POST, HEAD, OPTIONS, PUT, DELETE, TRACE
 

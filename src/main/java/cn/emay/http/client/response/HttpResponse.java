@@ -1,12 +1,12 @@
 package cn.emay.http.client.response;
 
+import java.net.HttpCookie;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.emay.http.client.common.EmayHttpCookie;
-import cn.emay.http.client.common.EmayHttpHeader;
-import cn.emay.http.client.common.EmayHttpResultCode;
-import cn.emay.http.client.response.parser.EmayHttpResponseParser;
+import cn.emay.http.client.common.HttpHeader;
+import cn.emay.http.client.common.HttpResultCode;
+import cn.emay.http.client.response.parser.HttpResponseParser;
 
 /**
  * Http响应
@@ -14,12 +14,12 @@ import cn.emay.http.client.response.parser.EmayHttpResponseParser;
  * @author Frank
  *
  */
-public class EmayHttpResponse {
+public class HttpResponse {
 
 	/**
 	 * Http 结果代码
 	 */
-	private EmayHttpResultCode resultCode;
+	private HttpResultCode resultCode;
 
 	/**
 	 * Http链接Code
@@ -29,12 +29,12 @@ public class EmayHttpResponse {
 	/**
 	 * Http响应头
 	 */
-	private List<EmayHttpHeader> headers;
+	private List<HttpHeader> headers;
 
 	/**
 	 * http响应Cookies
 	 */
-	private List<EmayHttpCookie> cookies;
+	private List<HttpCookie> cookies;
 
 	/**
 	 * http响应数据
@@ -61,7 +61,7 @@ public class EmayHttpResponse {
 	 * @param throwable
 	 *            异常
 	 */
-	public EmayHttpResponse(EmayHttpResultCode resultCode, int httpCode, List<EmayHttpHeader> headers, List<EmayHttpCookie> cookies, byte[] data, Throwable throwable) {
+	public HttpResponse(HttpResultCode resultCode, int httpCode, List<HttpHeader> headers, List<HttpCookie> cookies, byte[] data, Throwable throwable) {
 		this.resultCode = resultCode;
 		this.httpCode = httpCode;
 		this.headers = headers;
@@ -76,7 +76,7 @@ public class EmayHttpResponse {
 	 * @return
 	 */
 	public boolean isSuccess() {
-		return EmayHttpResultCode.SUCCESS.equals(resultCode);
+		return HttpResultCode.SUCCESS.equals(resultCode);
 	}
 
 	/**
@@ -88,7 +88,7 @@ public class EmayHttpResponse {
 	 *            编码
 	 * @return
 	 */
-	public <T> T getData(EmayHttpResponseParser<T> parser, String charSet) {
+	public <T> T getData(HttpResponseParser<T> parser, String charSet) {
 		return parser.parseData(httpCode, headers, cookies, charSet, data);
 	}
 
@@ -99,15 +99,15 @@ public class EmayHttpResponse {
 	 *            头名称
 	 * @return
 	 */
-	public List<EmayHttpHeader> getHeader(String name) {
+	public List<HttpHeader> getHeader(String name) {
 		if (name == null) {
 			return null;
 		}
 		if (headers == null || headers.isEmpty()) {
 			return null;
 		}
-		List<EmayHttpHeader> list = new ArrayList<EmayHttpHeader>();
-		for (EmayHttpHeader header : headers) {
+		List<HttpHeader> list = new ArrayList<HttpHeader>();
+		for (HttpHeader header : headers) {
 			if (header.getName().equals(name)) {
 				list.add(header);
 			}
@@ -122,8 +122,8 @@ public class EmayHttpResponse {
 	 *            头名称
 	 * @return
 	 */
-	public EmayHttpHeader getHeaderSingle(String name) {
-		List<EmayHttpHeader> headerlist = getHeader(name);
+	public HttpHeader getHeaderSingle(String name) {
+		List<HttpHeader> headerlist = getHeader(name);
 		if (headerlist == null || headerlist.isEmpty()) {
 			return null;
 		}
@@ -137,15 +137,15 @@ public class EmayHttpResponse {
 	 *            Cookie名称
 	 * @return
 	 */
-	public List<EmayHttpCookie> getCookie(String name) {
+	public List<HttpCookie> getCookie(String name) {
 		if (name == null) {
 			return null;
 		}
 		if (cookies == null || cookies.isEmpty()) {
 			return null;
 		}
-		List<EmayHttpCookie> list = new ArrayList<EmayHttpCookie>();
-		for (EmayHttpCookie header : cookies) {
+		List<HttpCookie> list = new ArrayList<HttpCookie>();
+		for (HttpCookie header : cookies) {
 			if (header.getName().equals(name)) {
 				list.add(header);
 			}
@@ -160,15 +160,15 @@ public class EmayHttpResponse {
 	 *            Cookie名称
 	 * @return
 	 */
-	public EmayHttpCookie getCookieSingle(String name) {
-		List<EmayHttpCookie> cookielist = getCookie(name);
+	public HttpCookie getCookieSingle(String name) {
+		List<HttpCookie> cookielist = getCookie(name);
 		if (cookielist == null || cookielist.isEmpty()) {
 			return null;
 		}
 		return cookielist.get(0);
 	}
 
-	public EmayHttpResultCode getResultCode() {
+	public HttpResultCode getResultCode() {
 		return resultCode;
 	}
 
@@ -176,11 +176,11 @@ public class EmayHttpResponse {
 		return httpCode;
 	}
 
-	public List<EmayHttpHeader> getHeaders() {
+	public List<HttpHeader> getHeaders() {
 		return headers;
 	}
 
-	public List<EmayHttpCookie> getCookies() {
+	public List<HttpCookie> getCookies() {
 		return cookies;
 	}
 

@@ -6,7 +6,7 @@ package cn.emay.http.client.common;
  * @author Frank
  *
  */
-public enum EmayHttpResultCode {
+public enum HttpResultCode {
 
 	SUCCESS("成功", "SUCCESS"), //
 	ERROR_CUSTOM_HTTPS_PAMARS("自定义HTTPS参数错误", "ERROR-CUSTOM-HTTPS-PAMARS"), //
@@ -27,13 +27,13 @@ public enum EmayHttpResultCode {
 	 */
 	private String code;
 
-	private EmayHttpResultCode(String name, String code) {
+	private HttpResultCode(String name, String code) {
 		this.name = name;
 		this.code = code;
 	}
 
 	public static String findNameByCode(String code) {
-		for (EmayHttpResultCode oc : EmayHttpResultCode.values()) {
+		for (HttpResultCode oc : HttpResultCode.values()) {
 			if (oc.getCode().equals(code)) {
 				return oc.getName();
 			}
@@ -42,7 +42,7 @@ public enum EmayHttpResultCode {
 	}
 
 	public static String findCodeByName(String name) {
-		for (EmayHttpResultCode oc : EmayHttpResultCode.values()) {
+		for (HttpResultCode oc : HttpResultCode.values()) {
 			if (oc.getName().equals(name)) {
 				return oc.getCode();
 			}

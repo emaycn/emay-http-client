@@ -6,7 +6,7 @@ package cn.emay.http.client.request.data;
  * @author Frank
  *
  */
-public interface EmayHttpRequestData {
+public interface HttpRequestData {
 
 	/**
 	 * 将请求参数转换为byte[]<br/>

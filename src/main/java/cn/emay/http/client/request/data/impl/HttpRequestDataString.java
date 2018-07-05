@@ -2,7 +2,7 @@ package cn.emay.http.client.request.data.impl;
 
 import java.io.UnsupportedEncodingException;
 
-import cn.emay.http.client.request.data.EmayHttpRequestData;
+import cn.emay.http.client.request.data.HttpRequestData;
 
 /**
  * Http 请求解析器：String
@@ -10,7 +10,7 @@ import cn.emay.http.client.request.data.EmayHttpRequestData;
  * @author Frank
  *
  */
-public class EmayHttpRequestDataString implements EmayHttpRequestData {
+public class HttpRequestDataString implements HttpRequestData {
 
 	/**
 	 * 数据
@@ -27,7 +27,7 @@ public class EmayHttpRequestDataString implements EmayHttpRequestData {
 	 * @param data
 	 *            数据
 	 */
-	public EmayHttpRequestDataString(String data) {
+	public HttpRequestDataString(String data) {
 		this.data = data;
 	}
 

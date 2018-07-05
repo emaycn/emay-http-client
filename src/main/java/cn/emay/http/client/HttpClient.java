@@ -1,16 +1,16 @@
 package cn.emay.http.client;
 
+import java.net.HttpCookie;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import cn.emay.http.client.common.EmayHttpCookie;
-import cn.emay.http.client.common.EmayHttpHeader;
-import cn.emay.http.client.common.EmayHttpMethod;
-import cn.emay.http.client.logic.EmayHttpLogic;
-import cn.emay.http.client.request.data.EmayHttpRequestData;
-import cn.emay.http.client.request.https.EmayHttpsCustomParams;
-import cn.emay.http.client.response.EmayHttpResponse;
+import cn.emay.http.client.common.HttpHeader;
+import cn.emay.http.client.common.HttpMethod;
+import cn.emay.http.client.logic.HttpLogic;
+import cn.emay.http.client.request.data.HttpRequestData;
+import cn.emay.http.client.request.https.HttpsCustomParams;
+import cn.emay.http.client.response.HttpResponse;
 
 /**
  * EMAY http客户端<br/>
@@ -22,7 +22,7 @@ import cn.emay.http.client.response.EmayHttpResponse;
  * @author Frank
  *
  */
-public class EmayHttpClient {
+public class HttpClient {
 
 	/* debug */
 
@@ -30,14 +30,14 @@ public class EmayHttpClient {
 	 * 打开DEBUG
 	 */
 	public static void openDebug() {
-		EmayHttpLogic.getInstance().openDebug();
+		HttpLogic.getInstance().openDebug();
 	}
 
 	/**
 	 * 关闭DEBUG
 	 */
 	public static void closeDebug() {
-		EmayHttpLogic.getInstance().closeDebug();
+		HttpLogic.getInstance().closeDebug();
 	}
 
 	/* post */
@@ -51,8 +51,8 @@ public class EmayHttpClient {
 	 *            传输数据【Get可以不传】
 	 * @return
 	 */
-	public static EmayHttpResponse post(String url, byte[] requestData) {
-		return EmayHttpLogic.getInstance().service(url, EmayHttpMethod.POST, requestData);
+	public static HttpResponse post(String url, byte[] requestData) {
+		return HttpLogic.getInstance().service(url, HttpMethod.POST, requestData);
 	}
 
 	/**
@@ -64,23 +64,8 @@ public class EmayHttpClient {
 	 *            传输数据【Get可以不传】
 	 * @return
 	 */
-	public static EmayHttpResponse post(String url, EmayHttpRequestData requestData) {
-		return EmayHttpLogic.getInstance().service(url, EmayHttpMethod.POST, requestData.toBytes("UTF-8"));
-	}
-
-	/**
-	 * post请求
-	 * 
-	 * @param url
-	 *            链接
-	 * @param charSet
-	 *            编码
-	 * @param requestData
-	 *            传输数据【Get可以不传】
-	 * @return
-	 */
-	public static EmayHttpResponse post(String url, String charSet, byte[] requestData) {
-		return EmayHttpLogic.getInstance().service(url, EmayHttpMethod.POST, charSet, requestData);
+	public static HttpResponse post(String url, HttpRequestData requestData) {
+		return HttpLogic.getInstance().service(url, HttpMethod.POST, requestData.toBytes("UTF-8"));
 	}
 
 	/**
@@ -94,8 +79,8 @@ public class EmayHttpClient {
 	 *            传输数据【Get可以不传】
 	 * @return
 	 */
-	public static EmayHttpResponse post(String url, String charSet, EmayHttpRequestData requestData) {
-		return EmayHttpLogic.getInstance().service(url, EmayHttpMethod.POST, charSet, requestData.toBytes(charSet));
+	public static HttpResponse post(String url, String charSet, byte[] requestData) {
+		return HttpLogic.getInstance().service(url, HttpMethod.POST, charSet, requestData);
 	}
 
 	/**
@@ -105,16 +90,12 @@ public class EmayHttpClient {
 	 *            链接
 	 * @param charSet
 	 *            编码
-	 * @param headers
-	 *            Http头信息
-	 * @param cookies
-	 *            Cookie
 	 * @param requestData
 	 *            传输数据【Get可以不传】
 	 * @return
 	 */
-	public static EmayHttpResponse post(String url, String charSet, List<EmayHttpHeader> headers, List<EmayHttpCookie> cookies, byte[] requestData) {
-		return EmayHttpLogic.getInstance().service(url, EmayHttpMethod.POST, charSet, headers, cookies, requestData);
+	public static HttpResponse post(String url, String charSet, HttpRequestData requestData) {
+		return HttpLogic.getInstance().service(url, HttpMethod.POST, charSet, requestData.toBytes(charSet));
 	}
 
 	/**
@@ -132,8 +113,8 @@ public class EmayHttpClient {
 	 *            传输数据【Get可以不传】
 	 * @return
 	 */
-	public static EmayHttpResponse post(String url, String charSet, List<EmayHttpHeader> headers, List<EmayHttpCookie> cookies, EmayHttpRequestData requestData) {
-		return EmayHttpLogic.getInstance().service(url, EmayHttpMethod.POST, charSet, headers, cookies, requestData.toBytes(charSet));
+	public static HttpResponse post(String url, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies, byte[] requestData) {
+		return HttpLogic.getInstance().service(url, HttpMethod.POST, charSet, headers, cookies, requestData);
 	}
 
 	/**
@@ -149,14 +130,10 @@ public class EmayHttpClient {
 	 *            Cookie
 	 * @param requestData
 	 *            传输数据【Get可以不传】
-	 * @param connectionTimeOut
-	 *            链接超时时间
-	 * @param readTimeOut
-	 *            读取数据超时时间
 	 * @return
 	 */
-	public static EmayHttpResponse post(String url, String charSet, List<EmayHttpHeader> headers, List<EmayHttpCookie> cookies, byte[] requestData, int connectionTimeOut, int readTimeOut) {
-		return EmayHttpLogic.getInstance().service(url, EmayHttpMethod.POST, charSet, headers, cookies, requestData, connectionTimeOut, readTimeOut);
+	public static HttpResponse post(String url, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies, HttpRequestData requestData) {
+		return HttpLogic.getInstance().service(url, HttpMethod.POST, charSet, headers, cookies, requestData.toBytes(charSet));
 	}
 
 	/**
@@ -178,9 +155,32 @@ public class EmayHttpClient {
 	 *            读取数据超时时间
 	 * @return
 	 */
-	public static EmayHttpResponse post(String url, String charSet, List<EmayHttpHeader> headers, List<EmayHttpCookie> cookies, EmayHttpRequestData requestData, int connectionTimeOut,
+	public static HttpResponse post(String url, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies, byte[] requestData, int connectionTimeOut, int readTimeOut) {
+		return HttpLogic.getInstance().service(url, HttpMethod.POST, charSet, headers, cookies, requestData, connectionTimeOut, readTimeOut);
+	}
+
+	/**
+	 * post请求
+	 * 
+	 * @param url
+	 *            链接
+	 * @param charSet
+	 *            编码
+	 * @param headers
+	 *            Http头信息
+	 * @param cookies
+	 *            Cookie
+	 * @param requestData
+	 *            传输数据【Get可以不传】
+	 * @param connectionTimeOut
+	 *            链接超时时间
+	 * @param readTimeOut
+	 *            读取数据超时时间
+	 * @return
+	 */
+	public static HttpResponse post(String url, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies, HttpRequestData requestData, int connectionTimeOut,
 			int readTimeOut) {
-		return EmayHttpLogic.getInstance().service(url, EmayHttpMethod.POST, charSet, headers, cookies, requestData.toBytes(charSet), connectionTimeOut, readTimeOut);
+		return HttpLogic.getInstance().service(url, HttpMethod.POST, charSet, headers, cookies, requestData.toBytes(charSet), connectionTimeOut, readTimeOut);
 	}
 
 	/**
@@ -204,9 +204,9 @@ public class EmayHttpClient {
 	 *            自定义Https证书相关参数
 	 * @return
 	 */
-	public static EmayHttpResponse post(String url, String charSet, List<EmayHttpHeader> headers, List<EmayHttpCookie> cookies, byte[] requestData, int connectionTimeOut, int readTimeOut,
-			EmayHttpsCustomParams customHttpsParams) {
-		return EmayHttpLogic.getInstance().service(url, EmayHttpMethod.POST, charSet, headers, cookies, requestData, connectionTimeOut, readTimeOut, customHttpsParams);
+	public static HttpResponse post(String url, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies, byte[] requestData, int connectionTimeOut, int readTimeOut,
+			HttpsCustomParams customHttpsParams) {
+		return HttpLogic.getInstance().service(url, HttpMethod.POST, charSet, headers, cookies, requestData, connectionTimeOut, readTimeOut, customHttpsParams);
 	}
 
 	/**
@@ -230,9 +230,9 @@ public class EmayHttpClient {
 	 *            自定义Https证书相关参数
 	 * @return
 	 */
-	public static EmayHttpResponse post(String url, String charSet, List<EmayHttpHeader> headers, List<EmayHttpCookie> cookies, EmayHttpRequestData requestData, int connectionTimeOut, int readTimeOut,
-			EmayHttpsCustomParams customHttpsParams) {
-		return EmayHttpLogic.getInstance().service(url, EmayHttpMethod.POST, charSet, headers, cookies, requestData.toBytes(charSet), connectionTimeOut, readTimeOut, customHttpsParams);
+	public static HttpResponse post(String url, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies, HttpRequestData requestData, int connectionTimeOut, int readTimeOut,
+			HttpsCustomParams customHttpsParams) {
+		return HttpLogic.getInstance().service(url, HttpMethod.POST, charSet, headers, cookies, requestData.toBytes(charSet), connectionTimeOut, readTimeOut, customHttpsParams);
 	}
 
 	/* get */
@@ -244,8 +244,8 @@ public class EmayHttpClient {
 	 *            链接
 	 * @return
 	 */
-	public static EmayHttpResponse get(String url) {
-		return EmayHttpLogic.getInstance().service(url, EmayHttpMethod.GET);
+	public static HttpResponse get(String url) {
+		return HttpLogic.getInstance().service(url, HttpMethod.GET);
 	}
 
 	/**
@@ -257,8 +257,8 @@ public class EmayHttpClient {
 	 *            URL参数
 	 * @return
 	 */
-	public static EmayHttpResponse get(String baseUrl, Map<String, String> urlParams) {
-		return EmayHttpLogic.getInstance().service(genGetUrl(baseUrl, urlParams), EmayHttpMethod.GET);
+	public static HttpResponse get(String baseUrl, Map<String, String> urlParams) {
+		return HttpLogic.getInstance().service(genGetUrl(baseUrl, urlParams), HttpMethod.GET);
 	}
 
 	/**
@@ -270,8 +270,8 @@ public class EmayHttpClient {
 	 *            编码
 	 * @return
 	 */
-	public static EmayHttpResponse get(String url, String charSet) {
-		return EmayHttpLogic.getInstance().service(url, EmayHttpMethod.GET, charSet, null);
+	public static HttpResponse get(String url, String charSet) {
+		return HttpLogic.getInstance().service(url, HttpMethod.GET, charSet, null);
 	}
 
 	/**
@@ -285,8 +285,8 @@ public class EmayHttpClient {
 	 *            Cookie
 	 * @return
 	 */
-	public static EmayHttpResponse get(String url, List<EmayHttpHeader> headers, List<EmayHttpCookie> cookies) {
-		return EmayHttpLogic.getInstance().service(url, EmayHttpMethod.GET, "UTF-8", headers, cookies, null);
+	public static HttpResponse get(String url, List<HttpHeader> headers, List<HttpCookie> cookies) {
+		return HttpLogic.getInstance().service(url, HttpMethod.GET, "UTF-8", headers, cookies, null);
 	}
 
 	/**
@@ -304,8 +304,8 @@ public class EmayHttpClient {
 	 *            Cookie
 	 * @return
 	 */
-	public static EmayHttpResponse get(String baseUrl, Map<String, String> urlParams, String charSet, List<EmayHttpHeader> headers, List<EmayHttpCookie> cookies) {
-		return EmayHttpLogic.getInstance().service(genGetUrl(baseUrl, urlParams), EmayHttpMethod.GET, charSet, headers, cookies, null);
+	public static HttpResponse get(String baseUrl, Map<String, String> urlParams, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies) {
+		return HttpLogic.getInstance().service(genGetUrl(baseUrl, urlParams), HttpMethod.GET, charSet, headers, cookies, null);
 	}
 
 	/**
@@ -321,8 +321,8 @@ public class EmayHttpClient {
 	 *            Cookie
 	 * @return
 	 */
-	public static EmayHttpResponse get(String url, String charSet, List<EmayHttpHeader> headers, List<EmayHttpCookie> cookies) {
-		return EmayHttpLogic.getInstance().service(url, EmayHttpMethod.GET, charSet, headers, cookies, null);
+	public static HttpResponse get(String url, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies) {
+		return HttpLogic.getInstance().service(url, HttpMethod.GET, charSet, headers, cookies, null);
 	}
 
 	/**
@@ -344,9 +344,9 @@ public class EmayHttpClient {
 	 *            读取数据超时时间
 	 * @return
 	 */
-	public static EmayHttpResponse get(String baseUrl, Map<String, String> urlParams, String charSet, List<EmayHttpHeader> headers, List<EmayHttpCookie> cookies, int connectionTimeOut,
+	public static HttpResponse get(String baseUrl, Map<String, String> urlParams, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies, int connectionTimeOut,
 			int readTimeOut) {
-		return EmayHttpLogic.getInstance().service(genGetUrl(baseUrl, urlParams), EmayHttpMethod.GET, charSet, headers, cookies, null, connectionTimeOut, readTimeOut);
+		return HttpLogic.getInstance().service(genGetUrl(baseUrl, urlParams), HttpMethod.GET, charSet, headers, cookies, null, connectionTimeOut, readTimeOut);
 	}
 
 	/**
@@ -366,8 +366,8 @@ public class EmayHttpClient {
 	 *            读取数据超时时间
 	 * @return
 	 */
-	public static EmayHttpResponse get(String url, String charSet, List<EmayHttpHeader> headers, List<EmayHttpCookie> cookies, int connectionTimeOut, int readTimeOut) {
-		return EmayHttpLogic.getInstance().service(url, EmayHttpMethod.GET, charSet, headers, cookies, null, connectionTimeOut, readTimeOut);
+	public static HttpResponse get(String url, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies, int connectionTimeOut, int readTimeOut) {
+		return HttpLogic.getInstance().service(url, HttpMethod.GET, charSet, headers, cookies, null, connectionTimeOut, readTimeOut);
 	}
 
 	/**
@@ -391,9 +391,9 @@ public class EmayHttpClient {
 	 *            自定义Https证书相关参数
 	 * @return
 	 */
-	public static EmayHttpResponse get(String baseUrl, Map<String, String> urlParams, String charSet, List<EmayHttpHeader> headers, List<EmayHttpCookie> cookies, int connectionTimeOut,
-			int readTimeOut, EmayHttpsCustomParams customHttpsParams) {
-		return EmayHttpLogic.getInstance().service(genGetUrl(baseUrl, urlParams), EmayHttpMethod.GET, charSet, headers, cookies, null, connectionTimeOut, readTimeOut, customHttpsParams);
+	public static HttpResponse get(String baseUrl, Map<String, String> urlParams, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies, int connectionTimeOut,
+			int readTimeOut, HttpsCustomParams customHttpsParams) {
+		return HttpLogic.getInstance().service(genGetUrl(baseUrl, urlParams), HttpMethod.GET, charSet, headers, cookies, null, connectionTimeOut, readTimeOut, customHttpsParams);
 	}
 
 	/**
@@ -415,9 +415,9 @@ public class EmayHttpClient {
 	 *            自定义Https证书相关参数
 	 * @return
 	 */
-	public static EmayHttpResponse get(String url, String charSet, List<EmayHttpHeader> headers, List<EmayHttpCookie> cookies, int connectionTimeOut, int readTimeOut,
-			EmayHttpsCustomParams customHttpsParams) {
-		return EmayHttpLogic.getInstance().service(url, EmayHttpMethod.GET, charSet, headers, cookies, null, connectionTimeOut, readTimeOut, customHttpsParams);
+	public static HttpResponse get(String url, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies, int connectionTimeOut, int readTimeOut,
+			HttpsCustomParams customHttpsParams) {
+		return HttpLogic.getInstance().service(url, HttpMethod.GET, charSet, headers, cookies, null, connectionTimeOut, readTimeOut, customHttpsParams);
 	}
 
 	/* service */
@@ -431,8 +431,8 @@ public class EmayHttpClient {
 	 *            方法
 	 * @return
 	 */
-	public static EmayHttpResponse service(String url, EmayHttpMethod method) {
-		return EmayHttpLogic.getInstance().service(url, method);
+	public static HttpResponse service(String url, HttpMethod method) {
+		return HttpLogic.getInstance().service(url, method);
 	}
 
 	/**
@@ -446,8 +446,8 @@ public class EmayHttpClient {
 	 *            传输数据【Get可以不传】
 	 * @return
 	 */
-	public static EmayHttpResponse service(String url, EmayHttpMethod method, byte[] requestData) {
-		return EmayHttpLogic.getInstance().service(url, method, requestData);
+	public static HttpResponse service(String url, HttpMethod method, byte[] requestData) {
+		return HttpLogic.getInstance().service(url, method, requestData);
 	}
 
 	/**
@@ -463,8 +463,8 @@ public class EmayHttpClient {
 	 *            传输数据【Get可以不传】
 	 * @return
 	 */
-	public static EmayHttpResponse service(String url, EmayHttpMethod method, String charSet, byte[] requestData) {
-		return EmayHttpLogic.getInstance().service(url, method, charSet, requestData);
+	public static HttpResponse service(String url, HttpMethod method, String charSet, byte[] requestData) {
+		return HttpLogic.getInstance().service(url, method, charSet, requestData);
 	}
 
 	/**
@@ -484,8 +484,8 @@ public class EmayHttpClient {
 	 *            传输数据【Get可以不传】
 	 * @return
 	 */
-	public static EmayHttpResponse service(String url, EmayHttpMethod method, String charSet, List<EmayHttpHeader> headers, List<EmayHttpCookie> cookies, byte[] requestData) {
-		return EmayHttpLogic.getInstance().service(url, method, charSet, headers, cookies, requestData);
+	public static HttpResponse service(String url, HttpMethod method, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies, byte[] requestData) {
+		return HttpLogic.getInstance().service(url, method, charSet, headers, cookies, requestData);
 	}
 
 	/**
@@ -509,9 +509,9 @@ public class EmayHttpClient {
 	 *            读取数据超时时间
 	 * @return
 	 */
-	public static EmayHttpResponse service(String url, EmayHttpMethod method, String charSet, List<EmayHttpHeader> headers, List<EmayHttpCookie> cookies, byte[] requestData, int connectionTimeOut,
+	public static HttpResponse service(String url, HttpMethod method, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies, byte[] requestData, int connectionTimeOut,
 			int readTimeOut) {
-		return EmayHttpLogic.getInstance().service(url, method, charSet, headers, cookies, requestData, connectionTimeOut, readTimeOut);
+		return HttpLogic.getInstance().service(url, method, charSet, headers, cookies, requestData, connectionTimeOut, readTimeOut);
 	}
 
 	/**
@@ -537,9 +537,9 @@ public class EmayHttpClient {
 	 *            自定义Https证书相关参数
 	 * @return
 	 */
-	public static EmayHttpResponse service(String url, EmayHttpMethod method, String charSet, List<EmayHttpHeader> headers, List<EmayHttpCookie> cookies, byte[] requestData, int connectionTimeOut,
-			int readTimeOut, EmayHttpsCustomParams customHttpsParams) {
-		return EmayHttpLogic.getInstance().service(url, method, charSet, headers, cookies, requestData, connectionTimeOut, readTimeOut, customHttpsParams);
+	public static HttpResponse service(String url, HttpMethod method, String charSet, List<HttpHeader> headers, List<HttpCookie> cookies, byte[] requestData, int connectionTimeOut,
+			int readTimeOut, HttpsCustomParams customHttpsParams) {
+		return HttpLogic.getInstance().service(url, method, charSet, headers, cookies, requestData, connectionTimeOut, readTimeOut, customHttpsParams);
 	}
 
 	/* util */

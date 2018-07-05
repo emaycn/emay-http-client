@@ -4,7 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import cn.emay.http.client.request.data.EmayHttpRequestData;
+import cn.emay.http.client.request.data.HttpRequestData;
 
 /**
  * Http 请求解析器：Map<String, String>
@@ -12,7 +12,7 @@ import cn.emay.http.client.request.data.EmayHttpRequestData;
  * @author Frank
  *
  */
-public class EmayHttpRequestDataMap implements EmayHttpRequestData {
+public class HttpRequestDataMap implements HttpRequestData {
 
 	/**
 	 * 数据
@@ -29,7 +29,7 @@ public class EmayHttpRequestDataMap implements EmayHttpRequestData {
 	 * @param data
 	 *            数据
 	 */
-	public EmayHttpRequestDataMap(Map<String, String> data) {
+	public HttpRequestDataMap(Map<String, String> data) {
 		this.data = data;
 	}
 

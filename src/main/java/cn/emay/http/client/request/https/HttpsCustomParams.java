@@ -6,7 +6,7 @@ package cn.emay.http.client.request.https;
  * @author Frank
  *
  */
-public class EmayHttpsCustomParams {
+public class HttpsCustomParams {
 
 	/**
 	 * 密钥
@@ -25,7 +25,7 @@ public class EmayHttpsCustomParams {
 	 */
 	private String algorithm;
 
-	public EmayHttpsCustomParams() {
+	public HttpsCustomParams() {
 
 	}
 
@@ -40,7 +40,7 @@ public class EmayHttpsCustomParams {
 	 * @param algorithm
 	 *            指定交换数字证书的加密标准:JKS
 	 */
-	public EmayHttpsCustomParams(String password, String keyStorePath, String trustStorePath, String algorithm) {
+	public HttpsCustomParams(String password, String keyStorePath, String trustStorePath, String algorithm) {
 		this.password = password;
 		this.keyStorePath = keyStorePath;
 		this.trustStorePath = trustStorePath;
