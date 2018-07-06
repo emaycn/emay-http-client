@@ -209,7 +209,7 @@ public class HttpClient {
 			HttpsStoreParams httpsStoreParams) {
 		return HttpLogic.getInstance().service(url, HttpMethod.POST, charSet, headers, cookies, requestData, connectionTimeOut, readTimeOut, httpsStoreParams);
 	}
-	
+
 	/**
 	 * post请求
 	 * 
@@ -447,7 +447,7 @@ public class HttpClient {
 			HttpsStoreParams httpsStoreParams) {
 		return HttpLogic.getInstance().service(genGetUrl(baseUrl, urlParams), HttpMethod.GET, charSet, headers, cookies, null, connectionTimeOut, readTimeOut, httpsStoreParams);
 	}
-	
+
 	/**
 	 * get请求
 	 * 
@@ -668,7 +668,7 @@ public class HttpClient {
 			HttpsCerParams httpsCerParams) {
 		return HttpLogic.getInstance().service(url, method, charSet, headers, cookies, requestData, connectionTimeOut, readTimeOut, httpsCerParams);
 	}
-	
+
 	/* util */
 
 	/**

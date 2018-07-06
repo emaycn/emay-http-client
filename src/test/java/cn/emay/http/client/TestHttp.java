@@ -52,7 +52,7 @@ public class TestHttp {
 
 		response = HttpClient.get(baseUrl, urlParams, charSet, headers, cookies, connectionTimeOut, readTimeOut, customHttpsParams);
 		parse(response, charSet);
-		
+
 		response = HttpClient.post(baseUrl, charSet, headers, cookies, requestData.toBytes(charSet), connectionTimeOut, readTimeOut, customHttpsParams);
 		parse(response, charSet);
 
