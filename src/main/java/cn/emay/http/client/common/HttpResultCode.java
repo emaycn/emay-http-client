@@ -8,7 +8,7 @@ package cn.emay.http.client.common;
  */
 public enum HttpResultCode {
 
-	ERROR_URL("URL访问失败", "ERROR_URL"), //
+	ERROR_URL("URL错误", "ERROR_URL"), //
 	ERROR_HTTPS("HTTPS异常", "ERROR_HTTPS"), //
 
 	ERROR_CONNECT("链接创建失败", "ERROR_CONNECT"), //
