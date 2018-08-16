@@ -3,6 +3,7 @@ package cn.emay.http.client.logic;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -304,38 +305,72 @@ public class HttpLogic {
 		HttpsCerParams httpsCerParams0 = httpsCerParams;
 
 		HttpURLConnection conn0 = null;
+		
 		try {
-			conn0 = createConnection(url0, isHttps0, httpsCerParams0, httpsStoreParams0);
+			try {
+				conn0 = createConnection(url0, isHttps0, httpsCerParams0, httpsStoreParams0);
+			} catch (KeyManagementException e1) {
+				response = new HttpResponse(HttpResultCode.ERROR_HTTPS, -1, null, null, null, e1);
+			} catch (UnrecoverableKeyException e1) {
+				response = new HttpResponse(HttpResultCode.ERROR_HTTPS, -1, null, null, null, e1);
+			} catch (NoSuchAlgorithmException e1) {
+				response = new HttpResponse(HttpResultCode.ERROR_HTTPS, -1, null, null, null, e1);
+			} catch (MalformedURLException e1) {
+				response = new HttpResponse(HttpResultCode.ERROR_HTTPS, -1, null, null, null, e1);
+			} catch (KeyStoreException e1) {
+				response = new HttpResponse(HttpResultCode.ERROR_HTTPS, -1, null, null, null, e1);
+			} catch (CertificateException e1) {
+				response = new HttpResponse(HttpResultCode.ERROR_HTTPS, -1, null, null, null, e1);
+			}catch (FileNotFoundException e1) {
+				response = new HttpResponse(HttpResultCode.ERROR_HTTPS, -1, null, null, null, e1);
+			} catch (IOException e1) {
+				response = new HttpResponse(HttpResultCode.ERROR_CONNECT, -1, null, null, null, e1);
+			} catch (Throwable e) {
+				response = new HttpResponse(HttpResultCode.ERROR_OTHER, -1, null, null, null, e);
+			}
+			if(conn0 == null) {
+				log(response, method0, url0);
+				return response;
+			}
+			
 			fillTimeout(conn0, connectionTimeOut0, readTimeOut0);
 			filleMethod(conn0, method0);
 			fillHeaders(conn0, headers0);
 			fillCookies(conn0, isHttps0, cookies0);
-			request(conn0, requestData);
-			int httpCode0 = conn0.getResponseCode();
-			List<HttpHeader> responseHeaders0 = this.getHeaders(conn0, charSet0);
-			List<HttpCookie> responseCookies0 = this.getCookies(conn0, charSet0);
-			byte[] responseData0 = this.getResult(conn0);
-			response = new HttpResponse(HttpResultCode.SUCCESS, httpCode0, responseHeaders0, responseCookies0, responseData0, null);
-		} catch (SocketTimeoutException e) {
-			response = new HttpResponse(HttpResultCode.ERROR_TIMEOUT, -1, null, null, null, e);
-		} catch (KeyManagementException e) {
-			response = new HttpResponse(HttpResultCode.ERROR_HTTPS_SSL, -1, null, null, null, e);
-		} catch (NoSuchAlgorithmException e) {
-			response = new HttpResponse(HttpResultCode.ERROR_HTTPS_SSL, -1, null, null, null, e);
-		} catch (UnsupportedEncodingException e) {
-			response = new HttpResponse(HttpResultCode.ERROR_CHARSET, -1, null, null, null, e);
-		} catch (MalformedURLException e) {
-			response = new HttpResponse(HttpResultCode.ERROR_URL, -1, null, null, null, e);
-		} catch (IOException e) {
-			response = new HttpResponse(HttpResultCode.ERROR_CONNECT, -1, null, null, null, e);
-		} catch (UnrecoverableKeyException e) {
-			response = new HttpResponse(HttpResultCode.ERROR_HTTPS_SSL, -1, null, null, null, e);
-		} catch (KeyStoreException e) {
-			response = new HttpResponse(HttpResultCode.ERROR_HTTPS_SSL, -1, null, null, null, e);
-		} catch (CertificateException e) {
-			response = new HttpResponse(HttpResultCode.ERROR_HTTPS_SSL, -1, null, null, null, e);
-		} catch (Throwable e) {
-			response = new HttpResponse(HttpResultCode.ERROR_OTHER, -1, null, null, null, e);
+			
+			boolean requestOK = false;
+			try {
+				request(conn0 , requestData);
+				requestOK = true;
+			} catch (SocketTimeoutException e1) {
+				response = new HttpResponse(HttpResultCode.ERROR_REQUEST_TIMEOUT, -1, null, null, null, e1);
+			} catch (IOException e1) {
+				response = new HttpResponse(HttpResultCode.ERROR_REQUEST, -1, null, null, null, e1);
+			} catch (Throwable e) {
+				response = new HttpResponse(HttpResultCode.ERROR_OTHER, -1, null, null, null, e);
+			}
+			if(!requestOK) {
+				log(response, method0, url0);
+				return response;
+			}
+			
+			try {
+				int httpCode0 = conn0.getResponseCode();
+				List<HttpHeader> responseHeaders0 = this.getHeaders(conn0, charSet0);
+				List<HttpCookie> responseCookies0 = this.getCookies(conn0, charSet0);
+				byte[] responseData0 = this.getResult(conn0);
+				response = new HttpResponse(HttpResultCode.SUCCESS, httpCode0, responseHeaders0, responseCookies0, responseData0, null);
+			} catch (SocketTimeoutException e) {
+				response = new HttpResponse(HttpResultCode.ERROR_RESPONSE_TIMEOUT, -1, null, null, null, e);
+			} catch (UnsupportedEncodingException e) {
+				response = new HttpResponse(HttpResultCode.ERROR_RESPONSE_CHARSET, -1, null, null, null, e);
+			} catch (IOException e) {
+				response = new HttpResponse(HttpResultCode.ERROR_RESPONSE, -1, null, null, null, e);
+			} catch (Throwable e) {
+				response = new HttpResponse(HttpResultCode.ERROR_OTHER, -1, null, null, null, e);
+			}
+			log(response, method0, url0);
+			return response;
 		} finally {
 			if (conn0 != null) {
 				try {
@@ -347,6 +382,9 @@ public class HttpLogic {
 				}
 			}
 		}
+	}
+	
+	private void log(HttpResponse response ,HttpMethod method0,String url0) {
 		if (debug) {
 			if (response.isSuccess()) {
 				logger.info("http " + method0.toString() + " " + url0 + " success.");
@@ -354,7 +392,6 @@ public class HttpLogic {
 				logger.error("http " + method0.toString() + " " + url0 + " error. resultCode: " + response.getResultCode().getCode() + ", httpCode:" + response.getHttpCode(), response.getThrowable());
 			}
 		}
-		return response;
 	}
 
 	/**
@@ -373,7 +410,7 @@ public class HttpLogic {
 	 * @throws CertificateException
 	 */
 	private HttpURLConnection createConnection(String url, boolean isHttps, HttpsCerParams httpsCerParams, HttpsStoreParams httpsStoreParams)
-			throws NoSuchAlgorithmException, KeyManagementException, MalformedURLException, IOException, UnrecoverableKeyException, KeyStoreException, CertificateException {
+			throws NoSuchAlgorithmException, KeyManagementException, MalformedURLException,FileNotFoundException, UnrecoverableKeyException, KeyStoreException, CertificateException , IOException{
 		HttpURLConnection conn = null;
 		URL console = new URL(url);
 		if (isHttps) {

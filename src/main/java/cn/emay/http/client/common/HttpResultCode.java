@@ -8,13 +8,21 @@ package cn.emay.http.client.common;
  */
 public enum HttpResultCode {
 
+	ERROR_URL("URL访问失败", "ERROR_URL"), //
+	ERROR_HTTPS("HTTPS异常", "ERROR_HTTPS"), //
+
+	ERROR_CONNECT("链接创建失败", "ERROR_CONNECT"), //
+
+	ERROR_REQUEST_TIMEOUT("请求超时", "ERROR_REQUEST_TIMEOUT"), //
+	ERROR_REQUEST("请求失败", "ERROR_REQUEST"), //
+
+	ERROR_RESPONSE_TIMEOUT("响应超时", "ERROR_RESPONSE_TIMEOUT"), //
+	ERROR_RESPONSE_CHARSET("响应失败-编码错误", "ERROR_RESPONSE_CHARSET"), //
+	ERROR_RESPONSE("响应失败", "ERROR_RESPONSE"), //
+
 	SUCCESS("成功", "SUCCESS"), //
-	ERROR_URL("URL访问失败", "ERROR-URL"), //
-	ERROR_HTTPS_SSL("HTTPS异常", "ERROR-HTTPS-SSL"), //
-	ERROR_CHARSET("编码错误", "ERROR-CHARSET"), //
-	ERROR_CONNECT("访问失败", "ERROR-CONNECT"), //
-	ERROR_TIMEOUT("访问超时", "ERROR-TIMEOUT"), //
-	ERROR_OTHER("其他异常", "ERROR-OTHER"), //
+
+	ERROR_OTHER("其他异常", "ERROR_OTHER"), //
 	;
 
 	/**
