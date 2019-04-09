@@ -8,6 +8,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import cn.emay.http.client.common.HttpHeader;
 import cn.emay.http.client.https.HttpsCerParams;
 import cn.emay.http.client.https.HttpsStoreParams;
@@ -16,7 +19,14 @@ import cn.emay.http.client.request.impl.HttpRequestDataMap;
 import cn.emay.http.client.response.HttpResponse;
 import cn.emay.http.client.response.parser.impl.HttpResponseParserString;
 
+/**
+ * 
+ * @author Frank
+ *
+ */
 public class TestHttps {
+	
+	private static Logger logger = LoggerFactory.getLogger(TestHttps.class);
 
 	public static void main(String[] args) throws UnsupportedEncodingException {
 
@@ -25,7 +35,7 @@ public class TestHttps {
 		String charSet = "UTF-8";
 
 		String baseUrl = "https://sdx-st.com/hello.html";
-		Map<String, String> urlParams = new HashMap<>();
+		Map<String, String> urlParams = new HashMap<>(2);
 		urlParams.put("key1", URLEncoder.encode("vv1&s=s", charSet));
 		urlParams.put(URLEncoder.encode("key2&s=s", charSet), "vv2");
 		String url = HttpClient.genGetUrl(baseUrl, urlParams);
@@ -61,16 +71,16 @@ public class TestHttps {
 
 	private static void parse(HttpResponse response, String charSet) {
 
-		System.out.println("code:" + response.getResultCode().getCode());
-		System.out.println("httpcode:" + response.getHttpCode());
-		System.out.println("data:" + response.getData(new HttpResponseParserString(), charSet));
+		logger.info("code:" + response.getResultCode().getCode());
+		logger.info("httpcode:" + response.getHttpCode());
+		logger.info("data:" + response.getData(new HttpResponseParserString(), charSet));
 
 		for (HttpCookie cookie : response.getCookies()) {
-			System.out.println("cookie: name=" + cookie.getName() + " value=" + cookie.getValue());
+			logger.info("cookie: name=" + cookie.getName() + " value=" + cookie.getValue());
 		}
 
 		for (HttpHeader header : response.getHeaders()) {
-			System.out.println("header: name=" + header.getName() + " value=" + header.getValue());
+			logger.info("header: name=" + header.getName() + " value=" + header.getValue());
 		}
 	}
 

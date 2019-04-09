@@ -305,7 +305,7 @@ public class HttpLogic {
 		HttpsCerParams httpsCerParams0 = httpsCerParams;
 
 		HttpURLConnection conn0 = null;
-		
+
 		try {
 			try {
 				conn0 = createConnection(url0, isHttps0, httpsCerParams0, httpsStoreParams0);
@@ -321,26 +321,26 @@ public class HttpLogic {
 				response = new HttpResponse(HttpResultCode.ERROR_HTTPS, -1, null, null, null, e1);
 			} catch (CertificateException e1) {
 				response = new HttpResponse(HttpResultCode.ERROR_HTTPS, -1, null, null, null, e1);
-			}catch (FileNotFoundException e1) {
+			} catch (FileNotFoundException e1) {
 				response = new HttpResponse(HttpResultCode.ERROR_HTTPS, -1, null, null, null, e1);
 			} catch (IOException e1) {
 				response = new HttpResponse(HttpResultCode.ERROR_CONNECT, -1, null, null, null, e1);
 			} catch (Throwable e) {
 				response = new HttpResponse(HttpResultCode.ERROR_OTHER, -1, null, null, null, e);
 			}
-			if(conn0 == null) {
+			if (conn0 == null) {
 				log(response, method0, url0);
 				return response;
 			}
-			
+
 			fillTimeout(conn0, connectionTimeOut0, readTimeOut0);
 			filleMethod(conn0, method0);
 			fillHeaders(conn0, headers0);
 			fillCookies(conn0, isHttps0, cookies0);
-			
+
 			boolean requestOK = false;
 			try {
-				request(conn0 , requestData);
+				request(conn0, requestData);
 				requestOK = true;
 			} catch (SocketTimeoutException e1) {
 				response = new HttpResponse(HttpResultCode.ERROR_REQUEST_TIMEOUT, -1, null, null, null, e1);
@@ -349,11 +349,11 @@ public class HttpLogic {
 			} catch (Throwable e) {
 				response = new HttpResponse(HttpResultCode.ERROR_OTHER, -1, null, null, null, e);
 			}
-			if(!requestOK) {
+			if (!requestOK) {
 				log(response, method0, url0);
 				return response;
 			}
-			
+
 			try {
 				int httpCode0 = conn0.getResponseCode();
 				List<HttpHeader> responseHeaders0 = this.getHeaders(conn0, charSet0);
@@ -383,8 +383,18 @@ public class HttpLogic {
 			}
 		}
 	}
-	
-	private void log(HttpResponse response ,HttpMethod method0,String url0) {
+
+	/**
+	 * 打印日志
+	 * 
+	 * @param response
+	 *            响应
+	 * @param method0
+	 *            方法
+	 * @param url0
+	 *            地址
+	 */
+	private void log(HttpResponse response, HttpMethod method0, String url0) {
 		if (debug) {
 			if (response.isSuccess()) {
 				logger.info("http " + method0.toString() + " " + url0 + " success.");
@@ -410,7 +420,7 @@ public class HttpLogic {
 	 * @throws CertificateException
 	 */
 	private HttpURLConnection createConnection(String url, boolean isHttps, HttpsCerParams httpsCerParams, HttpsStoreParams httpsStoreParams)
-			throws NoSuchAlgorithmException, KeyManagementException, MalformedURLException,FileNotFoundException, UnrecoverableKeyException, KeyStoreException, CertificateException , IOException{
+			throws NoSuchAlgorithmException, KeyManagementException, MalformedURLException, FileNotFoundException, UnrecoverableKeyException, KeyStoreException, CertificateException, IOException {
 		HttpURLConnection conn = null;
 		URL console = new URL(url);
 		if (isHttps) {
@@ -693,7 +703,6 @@ public class HttpLogic {
 			}
 		}
 		return buffer;
-
 	}
 
 }

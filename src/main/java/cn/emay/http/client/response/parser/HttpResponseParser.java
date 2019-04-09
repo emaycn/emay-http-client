@@ -17,8 +17,17 @@ public interface HttpResponseParser<T> {
 	/**
 	 * 解析
 	 * 
-	 * @param outputStream
-	 *            http响应数据字节流
+	 * @param httpCode
+	 *            HTTP状态码
+	 * @param headers
+	 *            头信息
+	 * @param cookies
+	 *            Cookie
+	 * @param charSet
+	 *            编码
+	 * @param data
+	 *            数据
+	 * @return
 	 */
 	public T parseData(int httpCode, List<HttpHeader> headers, List<HttpCookie> cookies, String charSet, byte[] data);
 

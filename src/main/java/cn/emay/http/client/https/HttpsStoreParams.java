@@ -15,14 +15,17 @@ public class HttpsStoreParams {
 	 * 密钥
 	 */
 	private String password;
+
 	/**
 	 * 密钥库文件地址
 	 */
 	private String keyStorePath;
+
 	/**
 	 * 信任库文件地址
 	 */
 	private String trustStorePath;
+
 	/**
 	 * 指定交换数字证书的加密标准<br/>
 	 * 通用:pkcs12<br/>

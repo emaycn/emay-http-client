@@ -29,6 +29,7 @@ public enum HttpResultCode {
 	 * 名称
 	 */
 	private String name;
+
 	/**
 	 * 编码
 	 */
@@ -39,6 +40,12 @@ public enum HttpResultCode {
 		this.code = code;
 	}
 
+	/**
+	 * 根据Code查名称
+	 * 
+	 * @param code
+	 * @return
+	 */
 	public static String findNameByCode(String code) {
 		for (HttpResultCode oc : HttpResultCode.values()) {
 			if (oc.getCode().equals(code)) {
@@ -48,6 +55,12 @@ public enum HttpResultCode {
 		return null;
 	}
 
+	/**
+	 * 根据名称查Code
+	 * 
+	 * @param name
+	 * @return
+	 */
 	public static String findCodeByName(String name) {
 		for (HttpResultCode oc : HttpResultCode.values()) {
 			if (oc.getName().equals(name)) {
