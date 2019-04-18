@@ -7,6 +7,7 @@ import java.util.List;
 import cn.emay.http.client.common.HttpHeader;
 import cn.emay.http.client.common.HttpResultCode;
 import cn.emay.http.client.response.parser.HttpResponseParser;
+import cn.emay.http.client.response.parser.impl.HttpResponseParserString;
 
 /**
  * Http响应
@@ -90,6 +91,26 @@ public class HttpResponse {
 	 */
 	public <T> T getData(HttpResponseParser<T> parser, String charSet) {
 		return parser.parseData(httpCode, headers, cookies, charSet, data);
+	}
+
+	/**
+	 * 获取String类型的数据
+	 * 
+	 * @param charSet
+	 *            编码
+	 * @return
+	 */
+	public String getStringData(String charSet) {
+		return getData(new HttpResponseParserString(), charSet);
+	}
+
+	/**
+	 * 获取String类型的数据(UTF-8编码)
+	 * 
+	 * @return
+	 */
+	public String getStringData() {
+		return getData(new HttpResponseParserString(), "UTF-8");
 	}
 
 	/**

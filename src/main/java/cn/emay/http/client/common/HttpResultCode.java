@@ -8,22 +8,46 @@ package cn.emay.http.client.common;
  */
 public enum HttpResultCode {
 
-	ERROR_URL("URL错误", "ERROR_URL"), //
-	ERROR_HTTPS("HTTPS异常", "ERROR_HTTPS"), //
-
-	ERROR_CONNECT("链接创建失败", "ERROR_CONNECT"), //
-
-	ERROR_REQUEST_TIMEOUT("请求超时", "ERROR_REQUEST_TIMEOUT"), //
-	ERROR_REQUEST("请求失败", "ERROR_REQUEST"), //
-
-	ERROR_RESPONSE_TIMEOUT("响应超时", "ERROR_RESPONSE_TIMEOUT"), //
-	ERROR_RESPONSE_CHARSET("响应失败-编码错误", "ERROR_RESPONSE_CHARSET"), //
-	ERROR_RESPONSE("响应失败", "ERROR_RESPONSE"), //
-
-	SUCCESS("成功", "SUCCESS"), //
-
-	ERROR_OTHER("其他异常", "ERROR_OTHER"), //
-	;
+	/**
+	 * URL错误
+	 */
+	ERROR_URL("URL错误", "ERROR_URL"),
+	/**
+	 * HTTPS异常
+	 */
+	ERROR_HTTPS("HTTPS异常", "ERROR_HTTPS"),
+	/**
+	 * 链接创建失败
+	 */
+	ERROR_CONNECT("链接创建失败", "ERROR_CONNECT"),
+	/**
+	 * 请求超时
+	 */
+	ERROR_REQUEST_TIMEOUT("请求超时", "ERROR_REQUEST_TIMEOUT"),
+	/**
+	 * 请求失败
+	 */
+	ERROR_REQUEST("请求失败", "ERROR_REQUEST"),
+	/**
+	 * 响应超时
+	 */
+	ERROR_RESPONSE_TIMEOUT("响应超时", "ERROR_RESPONSE_TIMEOUT"),
+	/**
+	 * 响应失败-编码错误
+	 */
+	ERROR_RESPONSE_CHARSET("响应失败-编码错误", "ERROR_RESPONSE_CHARSET"),
+	/**
+	 * 响应失败
+	 */
+	ERROR_RESPONSE("响应失败", "ERROR_RESPONSE"),
+	/**
+	 * 成功
+	 */
+	SUCCESS("成功", "SUCCESS"),
+	/**
+	 * 其他异常
+	 */
+	ERROR_OTHER("其他异常", "ERROR_OTHER"),;
 
 	/**
 	 * 名称

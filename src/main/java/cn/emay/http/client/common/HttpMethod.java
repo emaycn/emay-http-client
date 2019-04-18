@@ -8,6 +8,33 @@ package cn.emay.http.client.common;
  */
 public enum HttpMethod {
 
-	GET, POST, HEAD, OPTIONS, PUT, DELETE, TRACE
+	/**
+	 * GET
+	 */
+	GET,
+	/**
+	 * POST
+	 */
+	POST,
+	/**
+	 * HEAD
+	 */
+	HEAD,
+	/**
+	 * OPTIONS
+	 */
+	OPTIONS,
+	/**
+	 * PUT
+	 */
+	PUT,
+	/**
+	 * DELETE
+	 */
+	DELETE,
+	/**
+	 * TRACE
+	 */
+	TRACE
 
 }
