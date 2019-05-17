@@ -24,7 +24,7 @@ import cn.emay.http.client.response.parser.impl.HttpResponseParserString;
  *
  */
 public class TestHttp {
-	
+
 	private static Logger logger = LoggerFactory.getLogger(TestHttp.class);
 
 	public static void main(String[] args) throws UnsupportedEncodingException {

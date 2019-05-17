@@ -12,7 +12,7 @@ public class HttpHeader {
 	 * 名称
 	 */
 	private String name;
-	
+
 	/**
 	 * 值
 	 */

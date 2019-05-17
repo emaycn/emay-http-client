@@ -14,7 +14,7 @@ public class HttpsCerParams {
 	 * 国际标准类型为X.509
 	 */
 	private String type;
-	
+
 	/**
 	 * 证书文件地址
 	 */
