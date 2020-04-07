@@ -680,20 +680,14 @@ public class HttpLogic {
 			return buffer;
 		}
 		ByteArrayOutputStream outStream = null;
-		int length = conn.getContentLength();
 		try {
-			if (length <= 0) {
-				outStream = new ByteArrayOutputStream();
-				byte[] buffer0 = new byte[1024];
-				int len = 0;
-				while ((len = is.read(buffer0)) != -1) {
-					outStream.write(buffer0, 0, len);
-				}
-				buffer = outStream.toByteArray();
-			} else {
-				buffer = new byte[length];
-				is.read(buffer);
+			outStream = new ByteArrayOutputStream();
+			byte[] buffer0 = new byte[1024];
+			int len = 0;
+			while ((len = is.read(buffer0)) != -1) {
+				outStream.write(buffer0, 0, len);
 			}
+			buffer = outStream.toByteArray();
 		} catch (IOException e) {
 			throw e;
 		} finally {
