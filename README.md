@@ -2,10 +2,10 @@
 
 ```java
 
-/**
-* example
-**/
-HttpResponse res = HttpClient.get("http://www.baidu.com");
-String resString = res.getStringData();
+Map<String, String> map = new HashMap<>();
+map.put("page_id", "4845534524194232");
+map.put("_item_pwd", "191919");
+HttpResult result = HttpClientUtils.post("https://www.showdoc.cc/server/index.php?s=/api/page/info", map);
+System.out.println(result.getDataStringUTF8());
 
 ```
