@@ -15,32 +15,27 @@ public class HttpResult {
     /**
      * 是否请求成功
      */
-    private boolean success;
+    private final boolean success;
     /**
      * 响应状态
      */
-    private StatusLine statusLine;
+    private final StatusLine statusLine;
     /**
      * 异常
      */
-    private Throwable throwable;
+    private final Throwable throwable;
     /**
      * 返回的数据
      */
-    private byte[] data;
+    private final byte[] data;
     /**
      * Http响应头
      */
-    private Header[] headers;
+    private final Header[] headers;
     /**
      * http响应Cookies
      */
-    private Cookie[] cookies;
-
-
-    public HttpResult() {
-
-    }
+    private final Cookie[] cookies;
 
     public HttpResult(boolean success, StatusLine statusLine, Throwable throwable, byte[] data, Header[] headers, Cookie[] cookies) {
         this.success = success;
@@ -59,36 +54,39 @@ public class HttpResult {
         return new HttpResult(false, statusLine, throwable, null, null, null);
     }
 
+    /**
+     * 是否请求成功
+     */
     public boolean isSuccess() {
         return success;
     }
 
-    public void setSuccess(boolean success) {
-        this.success = success;
-    }
-
+    /**
+     * 异常
+     */
     public Throwable getThrowable() {
         return throwable;
     }
 
-    public void setThrowable(Throwable throwable) {
-        this.throwable = throwable;
-    }
-
+    /**
+     * Http响应头
+     */
     public Header[] getHeaders() {
         return headers;
     }
 
-    public void setHeaders(Header[] headers) {
-        this.headers = headers;
-    }
-
+    /**
+     * http响应Cookies
+     */
     public Cookie[] getCookies() {
         return cookies;
     }
 
-    public void setCookies(Cookie[] cookies) {
-        this.cookies = cookies;
+    /**
+     * 响应状态
+     */
+    public StatusLine getStatusLine() {
+        return statusLine;
     }
 
     /**
@@ -102,13 +100,16 @@ public class HttpResult {
      * utf8编码的响应字符串数据
      */
     public String getDataStringUTF8() {
-        return new String(data, StandardCharsets.UTF_8);
+        return getDataString(StandardCharsets.UTF_8);
     }
 
     /**
      * 响应字符串数据
      */
     public String getDataString(Charset charset) {
+        if (data == null) {
+            return null;
+        }
         if (charset != null) {
             return new String(data, charset);
         } else {
@@ -120,6 +121,9 @@ public class HttpResult {
      * 响应字符串数据
      */
     public String getDataString(String charset) {
+        if (data == null) {
+            return null;
+        }
         if (charset != null) {
             try {
                 return new String(data, charset);
@@ -221,15 +225,5 @@ public class HttpResult {
         return getDataObjectByJson(StandardCharsets.UTF_8, clazz);
     }
 
-    public void setData(byte[] data) {
-        this.data = data;
-    }
 
-    public StatusLine getStatusLine() {
-        return statusLine;
-    }
-
-    public void setStatusLine(StatusLine statusLine) {
-        this.statusLine = statusLine;
-    }
 }

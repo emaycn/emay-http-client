@@ -1,50 +1,47 @@
 package cn.emay.http.client.request.impl;
 
-import java.io.UnsupportedEncodingException;
-
 import cn.emay.http.client.request.HttpRequestData;
+
+import java.io.UnsupportedEncodingException;
 
 /**
  * Http 请求解析器：String
- * 
- * @author Frank
  *
+ * @author Frank
  */
 public class HttpRequestDataString implements HttpRequestData {
 
-	/**
-	 * 数据
-	 */
-	private String data;
+    /**
+     * 数据
+     */
+    private final String data;
 
-	/**
-	 * 请求内容byte数组
-	 */
-	private byte[] contentBytes;
+    /**
+     * 请求内容byte数组
+     */
+    private byte[] contentBytes;
 
-	/**
-	 * 
-	 * @param data
-	 *            数据
-	 */
-	public HttpRequestDataString(String data) {
-		this.data = data;
-	}
+    /**
+     * @param data 数据
+     */
+    public HttpRequestDataString(String data) {
+        this.data = data;
+    }
 
-	@Override
-	public byte[] toBytes(String charSet) {
-		if (contentBytes != null) {
-			return contentBytes;
-		}
-		if (data == null) {
-			return null;
-		}
-		try {
-			contentBytes = data.getBytes(charSet);
-		} catch (UnsupportedEncodingException e) {
-			throw new IllegalArgumentException(e);
-		}
-		return contentBytes;
-	}
+    @Override
+    public byte[] toBytes(String charSet) {
+        if (contentBytes != null) {
+            return contentBytes;
+        }
+        if (data == null) {
+            return null;
+        }
+        try {
+            contentBytes = data.getBytes(charSet);
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalArgumentException(e);
+        }
+        return contentBytes;
+    }
 
 }
