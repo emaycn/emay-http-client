@@ -73,7 +73,11 @@ public class HttpClientUtils {
             return HttpResult.failHttpResult(new BasicStatusLine(HttpVersion.HTTP_1_1, 601, "url为空"), new NullPointerException("url is null"));
         }
         BasicCookieStore cookieStore = new BasicCookieStore();
-        HttpHost proxy = proxyHost == null ? null : new HttpHost(proxyHost);
+        HttpHost proxy = null;
+        if (proxyHost != null) {
+            String[] ipAndPort = proxyHost.split(":");
+            proxy = new HttpHost(ipAndPort[0], Integer.parseInt(ipAndPort[1]));
+        }
         try (CloseableHttpClient httpClient = HttpClients.custom().setProxy(proxy).setDefaultCookieStore(cookieStore).build()) {
             HttpPost httpPost = new HttpPost(url);
             httpPost.setConfig(RequestConfig.custom().setConnectTimeout(connectTimeoutMills).setSocketTimeout(socketTimeoutMills).build());
@@ -140,7 +144,11 @@ public class HttpClientUtils {
         }
         String charSetNew = charSet == null ? "UTF-8" : charSet;
         BasicCookieStore cookieStore = new BasicCookieStore();
-        HttpHost proxy = proxyHost == null ? null : new HttpHost(proxyHost);
+        HttpHost proxy = null;
+        if (proxyHost != null) {
+            String[] ipAndPort = proxyHost.split(":");
+            proxy = new HttpHost(ipAndPort[0], Integer.parseInt(ipAndPort[1]));
+        }
         try (CloseableHttpClient httpClient = HttpClients.custom().setProxy(proxy).setDefaultCookieStore(cookieStore).build()) {
             HttpPost httpPost = new HttpPost(url);
             httpPost.setConfig(RequestConfig.custom().setConnectTimeout(connectTimeoutMills).setSocketTimeout(socketTimeoutMills).build());
@@ -208,7 +216,11 @@ public class HttpClientUtils {
         }
         String charSetNew = charSet == null ? "UTF-8" : charSet;
         BasicCookieStore cookieStore = new BasicCookieStore();
-        HttpHost proxy = proxyHost == null ? null : new HttpHost(proxyHost);
+        HttpHost proxy = null;
+        if (proxyHost != null) {
+            String[] ipAndPort = proxyHost.split(":");
+            proxy = new HttpHost(ipAndPort[0], Integer.parseInt(ipAndPort[1]));
+        }
         try (CloseableHttpClient httpClient = HttpClients.custom().setProxy(proxy).setDefaultCookieStore(cookieStore).build()) {
             HttpPost httpPost = new HttpPost(url);
             httpPost.setConfig(RequestConfig.custom().setConnectTimeout(connectTimeoutMills).setSocketTimeout(socketTimeoutMills).build());
@@ -277,7 +289,11 @@ public class HttpClientUtils {
         if (url == null) {
             return HttpResult.failHttpResult(new BasicStatusLine(HttpVersion.HTTP_1_1, 601, "url为空"), new NullPointerException("url is null"));
         }
-        HttpHost proxy = proxyHost == null ? null : new HttpHost(proxyHost);
+        HttpHost proxy = null;
+        if (proxyHost != null) {
+            String[] ipAndPort = proxyHost.split(":");
+            proxy = new HttpHost(ipAndPort[0], Integer.parseInt(ipAndPort[1]));
+        }
         BasicCookieStore cookieStore = new BasicCookieStore();
         try (CloseableHttpClient httpClient = HttpClients.custom().setProxy(proxy).setDefaultCookieStore(cookieStore).build()) {
             URIBuilder uriBuilder = new URIBuilder(url);
