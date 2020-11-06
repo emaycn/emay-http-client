@@ -1,9 +1,6 @@
 package cn.emay.http.apache;
 
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpVersion;
-import org.apache.http.NameValuePair;
+import org.apache.http.*;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
@@ -41,7 +38,7 @@ public class HttpClientUtils {
      * @return 结果
      */
     public static HttpResult posBytes(String url, byte[] bytes) {
-        return posBytes(url, bytes, null, null, 10000, 10000);
+        return posBytes(null, url, bytes, null, null, 10000, 10000);
     }
 
     /**
@@ -56,11 +53,28 @@ public class HttpClientUtils {
      * @return 结果
      */
     public static HttpResult posBytes(String url, byte[] bytes, Header[] headers, Cookie[] cookies, int connectTimeoutMills, int socketTimeoutMills) {
+        return posBytes(null, url, bytes, headers, cookies, connectTimeoutMills, socketTimeoutMills);
+    }
+
+    /**
+     * post 字节数组请求
+     *
+     * @param proxyHost           代理地址(ip:port,域名:port)
+     * @param url                 链接
+     * @param bytes               字节数组
+     * @param headers             请求头
+     * @param cookies             请求cookies
+     * @param connectTimeoutMills 链接超时时间（毫秒）
+     * @param socketTimeoutMills  读取超时时间（毫秒）
+     * @return 结果
+     */
+    public static HttpResult posBytes(String proxyHost, String url, byte[] bytes, Header[] headers, Cookie[] cookies, int connectTimeoutMills, int socketTimeoutMills) {
         if (url == null) {
             return HttpResult.failHttpResult(new BasicStatusLine(HttpVersion.HTTP_1_1, 601, "url为空"), new NullPointerException("url is null"));
         }
         BasicCookieStore cookieStore = new BasicCookieStore();
-        try (CloseableHttpClient httpClient = HttpClients.custom().setDefaultCookieStore(cookieStore).build()) {
+        HttpHost proxy = proxyHost == null ? null : new HttpHost(proxyHost);
+        try (CloseableHttpClient httpClient = HttpClients.custom().setProxy(proxy).setDefaultCookieStore(cookieStore).build()) {
             HttpPost httpPost = new HttpPost(url);
             httpPost.setConfig(RequestConfig.custom().setConnectTimeout(connectTimeoutMills).setSocketTimeout(socketTimeoutMills).build());
             if (bytes != null) {
@@ -88,7 +102,7 @@ public class HttpClientUtils {
      * @return 结果
      */
     public static HttpResult postJson(String url, String json) {
-        return postJson(url, json, "UTF-8", null, null, 10000, 10000);
+        return postJson(null, url, json, "UTF-8", null, null, 10000, 10000);
     }
 
     /**
@@ -104,12 +118,30 @@ public class HttpClientUtils {
      * @return 结果
      */
     public static HttpResult postJson(String url, String json, String charSet, Header[] headers, Cookie[] cookies, int connectTimeoutMills, int socketTimeoutMills) {
+        return postJson(null, url, json, charSet, headers, cookies, connectTimeoutMills, socketTimeoutMills);
+    }
+
+    /**
+     * post json字符串请求
+     *
+     * @param proxyHost           代理地址(ip:port,域名:port)
+     * @param url                 链接
+     * @param json                json字符串
+     * @param charSet             结果解析字符集
+     * @param headers             请求头
+     * @param cookies             请求cookies
+     * @param connectTimeoutMills 链接超时时间（毫秒）
+     * @param socketTimeoutMills  读取超时时间（毫秒）
+     * @return 结果
+     */
+    public static HttpResult postJson(String proxyHost, String url, String json, String charSet, Header[] headers, Cookie[] cookies, int connectTimeoutMills, int socketTimeoutMills) {
         if (url == null) {
             return HttpResult.failHttpResult(new BasicStatusLine(HttpVersion.HTTP_1_1, 601, "url为空"), new NullPointerException("url is null"));
         }
         String charSetNew = charSet == null ? "UTF-8" : charSet;
         BasicCookieStore cookieStore = new BasicCookieStore();
-        try (CloseableHttpClient httpClient = HttpClients.custom().setDefaultCookieStore(cookieStore).build()) {
+        HttpHost proxy = proxyHost == null ? null : new HttpHost(proxyHost);
+        try (CloseableHttpClient httpClient = HttpClients.custom().setProxy(proxy).setDefaultCookieStore(cookieStore).build()) {
             HttpPost httpPost = new HttpPost(url);
             httpPost.setConfig(RequestConfig.custom().setConnectTimeout(connectTimeoutMills).setSocketTimeout(socketTimeoutMills).build());
             httpPost.addHeader(new BasicHeader("content-type", "application/json;charset=UTF-8"));
@@ -138,7 +170,7 @@ public class HttpClientUtils {
      * @return 结果
      */
     public static HttpResult post(String url, Map<String, String> data) {
-        return post(url, data, "UTF-8", null, null, 10000, 10000);
+        return post(null, url, data, "UTF-8", null, null, 10000, 10000);
     }
 
     /**
@@ -154,12 +186,30 @@ public class HttpClientUtils {
      * @return 结果
      */
     public static HttpResult post(String url, Map<String, String> data, String charSet, Header[] headers, Cookie[] cookies, int connectTimeoutMills, int socketTimeoutMills) {
+        return post(null, url, data, charSet, headers, cookies, connectTimeoutMills, socketTimeoutMills);
+    }
+
+    /**
+     * post请求
+     *
+     * @param proxyHost           代理地址(ip:port,域名:port)
+     * @param url                 链接
+     * @param data                数据
+     * @param charSet             结果解析字符集
+     * @param headers             请求头
+     * @param cookies             请求cookies
+     * @param connectTimeoutMills 链接超时时间（毫秒）
+     * @param socketTimeoutMills  读取超时时间（毫秒）
+     * @return 结果
+     */
+    public static HttpResult post(String proxyHost, String url, Map<String, String> data, String charSet, Header[] headers, Cookie[] cookies, int connectTimeoutMills, int socketTimeoutMills) {
         if (url == null) {
             return HttpResult.failHttpResult(new BasicStatusLine(HttpVersion.HTTP_1_1, 601, "url为空"), new NullPointerException("url is null"));
         }
         String charSetNew = charSet == null ? "UTF-8" : charSet;
         BasicCookieStore cookieStore = new BasicCookieStore();
-        try (CloseableHttpClient httpClient = HttpClients.custom().setDefaultCookieStore(cookieStore).build()) {
+        HttpHost proxy = proxyHost == null ? null : new HttpHost(proxyHost);
+        try (CloseableHttpClient httpClient = HttpClients.custom().setProxy(proxy).setDefaultCookieStore(cookieStore).build()) {
             HttpPost httpPost = new HttpPost(url);
             httpPost.setConfig(RequestConfig.custom().setConnectTimeout(connectTimeoutMills).setSocketTimeout(socketTimeoutMills).build());
             List<NameValuePair> parameters = new ArrayList<>();
@@ -193,7 +243,7 @@ public class HttpClientUtils {
      * @return 结果
      */
     public static HttpResult get(String url, Map<String, String> data) {
-        return get(url, data, null, null, 10000, 10000);
+        return get(null, url, data, null, null, 10000, 10000);
     }
 
     /**
@@ -208,11 +258,28 @@ public class HttpClientUtils {
      * @return 结果
      */
     public static HttpResult get(String url, Map<String, String> data, Header[] headers, Cookie[] cookies, int connectTimeoutMills, int socketTimeoutMills) {
+        return get(null, url, data, headers, cookies, connectTimeoutMills, socketTimeoutMills);
+    }
+
+    /**
+     * get请求
+     *
+     * @param proxyHost           代理地址(ip:port,域名:port)
+     * @param url                 链接
+     * @param data                数据
+     * @param headers             请求头
+     * @param cookies             请求cookies
+     * @param connectTimeoutMills 链接超时时间（毫秒）
+     * @param socketTimeoutMills  读取超时时间（毫秒）
+     * @return 结果
+     */
+    public static HttpResult get(String proxyHost, String url, Map<String, String> data, Header[] headers, Cookie[] cookies, int connectTimeoutMills, int socketTimeoutMills) {
         if (url == null) {
             return HttpResult.failHttpResult(new BasicStatusLine(HttpVersion.HTTP_1_1, 601, "url为空"), new NullPointerException("url is null"));
         }
+        HttpHost proxy = proxyHost == null ? null : new HttpHost(proxyHost);
         BasicCookieStore cookieStore = new BasicCookieStore();
-        try (CloseableHttpClient httpClient = HttpClients.custom().setDefaultCookieStore(cookieStore).build()) {
+        try (CloseableHttpClient httpClient = HttpClients.custom().setProxy(proxy).setDefaultCookieStore(cookieStore).build()) {
             URIBuilder uriBuilder = new URIBuilder(url);
             if (data != null && data.size() > 0) {
                 data.forEach(uriBuilder::setParameter);
