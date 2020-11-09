@@ -170,6 +170,76 @@ public class HttpClientUtils {
     }
 
     /**
+     * post 字符串请求
+     *
+     * @param url    链接
+     * @param params 字符串k=v&k=v
+     * @return 结果
+     */
+    public static HttpResult postString(String url, String params) {
+        return postString(null, url, params, null, null, null, 10000, 10000);
+    }
+
+    /**
+     * post 字符串请求
+     *
+     * @param url                 链接
+     * @param params              字符串k=v&k=v
+     * @param charSet             结果解析字符集
+     * @param headers             请求头
+     * @param cookies             请求cookies
+     * @param connectTimeoutMills 链接超时时间（毫秒）
+     * @param socketTimeoutMills  读取超时时间（毫秒）
+     * @return 结果
+     */
+    public static HttpResult postString(String url, String params, String charSet, Header[] headers, Cookie[] cookies, int connectTimeoutMills, int socketTimeoutMills) {
+        return postString(null, url, params, charSet, headers, cookies, connectTimeoutMills, socketTimeoutMills);
+    }
+
+    /**
+     * post 字符串请求
+     *
+     * @param proxyHost           代理地址(ip:port,域名:port)
+     * @param url                 链接
+     * @param params              字符串k=v&k=v
+     * @param charSet             结果解析字符集
+     * @param headers             请求头
+     * @param cookies             请求cookies
+     * @param connectTimeoutMills 链接超时时间（毫秒）
+     * @param socketTimeoutMills  读取超时时间（毫秒）
+     * @return 结果
+     */
+    public static HttpResult postString(String proxyHost, String url, String params, String charSet, Header[] headers, Cookie[] cookies, int connectTimeoutMills, int socketTimeoutMills) {
+        if (url == null) {
+            return HttpResult.failHttpResult(new BasicStatusLine(HttpVersion.HTTP_1_1, 601, "url为空"), new NullPointerException("url is null"));
+        }
+        String charSetNew = charSet == null ? "UTF-8" : charSet;
+        BasicCookieStore cookieStore = new BasicCookieStore();
+        HttpHost proxy = null;
+        if (proxyHost != null) {
+            String[] ipAndPort = proxyHost.split(":");
+            proxy = new HttpHost(ipAndPort[0], Integer.parseInt(ipAndPort[1]));
+        }
+        try (CloseableHttpClient httpClient = HttpClients.custom().setProxy(proxy).setDefaultCookieStore(cookieStore).build()) {
+            HttpPost httpPost = new HttpPost(url);
+            httpPost.setConfig(RequestConfig.custom().setConnectTimeout(connectTimeoutMills).setSocketTimeout(socketTimeoutMills).build());
+            if (params != null) {
+                StringEntity se = new StringEntity(params, charSetNew);
+                httpPost.setEntity(se);
+            }
+            if (headers != null) {
+                httpPost.setHeaders(headers);
+            }
+            if (cookies != null) {
+                cookieStore.addCookies(cookies);
+            }
+            return httpClient.execute(httpPost, httpResponse -> handleResponse(httpResponse, cookieStore));
+        } catch (IOException e) {
+            return HttpResult.failHttpResult(new BasicStatusLine(HttpVersion.HTTP_1_1, 600, "http请求异常"), e);
+        }
+    }
+
+    /**
      * 简单post请求<br/>
      * UTF-8编码，10秒超时时间
      *
