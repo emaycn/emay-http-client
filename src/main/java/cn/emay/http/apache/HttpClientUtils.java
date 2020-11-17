@@ -17,11 +17,14 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.config.SocketConfig;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.NoConnectionReuseStrategy;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
@@ -440,7 +443,7 @@ public class HttpClientUtils {
 	 *            读取超时时间（毫秒）
 	 * @return 结果
 	 */
-	public static HttpResult get(String proxyHost, String url, Map<String, String> data, Header[] headers, Cookie[] cookies, int connectTimeoutMills, int socketTimeoutMills) {
+	public static HttpResult getBak(String proxyHost, String url, Map<String, String> data, Header[] headers, Cookie[] cookies, int connectTimeoutMills, int socketTimeoutMills) {
 		if (url == null) {
 			return HttpResult.failHttpResult(new BasicStatusLine(HttpVersion.HTTP_1_1, 601, "url为空"), new NullPointerException("url is null"));
 		}
@@ -467,6 +470,60 @@ public class HttpClientUtils {
 			return httpClient.execute(httpGet, httpResponse -> handleResponse(httpResponse, cookieStore));
 		} catch (IOException | URISyntaxException e) {
 			return HttpResult.failHttpResult(new BasicStatusLine(HttpVersion.HTTP_1_1, 600, "http请求异常"), e);
+		}
+	}
+
+	public static HttpResult get(String proxyHost, String url, Map<String, String> data, Header[] headers, Cookie[] cookies, int connectTimeoutMills, int socketTimeoutMills) {
+		if (url == null) {
+			return HttpResult.failHttpResult(new BasicStatusLine(HttpVersion.HTTP_1_1, 601, "url为空"), new NullPointerException("url is null"));
+		}
+		System.out.println(Thread.currentThread().getName() + "开始请求");
+		HttpHost proxy = null;
+		if (proxyHost != null) {
+			String[] ipAndPort = proxyHost.split(":");
+			proxy = new HttpHost(ipAndPort[0], Integer.parseInt(ipAndPort[1]));
+		}
+		BasicCookieStore cookieStore = new BasicCookieStore();
+		if (cookies != null) {
+			cookieStore.addCookies(cookies);
+		}
+		CloseableHttpClient httpClient = null;
+		try {
+			URIBuilder uriBuilder = new URIBuilder(url);
+			if (data != null && data.size() > 0) {
+				data.forEach(uriBuilder::setParameter);
+			}
+			SocketConfig socketConfig = SocketConfig.custom().setSoKeepAlive(false).setSoLinger(1).setSoReuseAddress(true).setSoTimeout(socketTimeoutMills).setTcpNoDelay(true).build();
+			RequestConfig config = RequestConfig.custom().setProxy(proxy)//
+					.setConnectTimeout(connectTimeoutMills)//
+					.setSocketTimeout(socketTimeoutMills)//
+					.setConnectionRequestTimeout(connectTimeoutMills)//
+					.build();
+			HttpClientBuilder builder = HttpClientBuilder.create();
+			builder.disableAutomaticRetries();
+			builder.disableContentCompression();
+			builder.disableCookieManagement();
+			builder.disableRedirectHandling();
+			builder.setConnectionReuseStrategy(new NoConnectionReuseStrategy());
+			builder.setDefaultCookieStore(cookieStore).//
+					setDefaultSocketConfig(socketConfig).//
+					setDefaultRequestConfig(config).build();//
+			httpClient = builder.build();//
+			URI uri = uriBuilder.build();
+			HttpGet httpGet = new HttpGet(uri);
+			if (headers != null) {
+				httpGet.setHeaders(headers);
+			}
+			return httpClient.execute(httpGet, httpResponse -> handleResponse(httpResponse, cookieStore));
+		} catch (IOException | URISyntaxException e) {
+			return HttpResult.failHttpResult(new BasicStatusLine(HttpVersion.HTTP_1_1, 600, "http请求异常"), e);
+		} finally {
+			try {
+				httpClient.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			System.out.println(Thread.currentThread().getName() + "完成请求");
 		}
 	}
 
