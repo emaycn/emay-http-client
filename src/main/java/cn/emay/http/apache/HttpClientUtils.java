@@ -353,7 +353,7 @@ public class HttpClientUtils {
 	 *            读取超时时间（毫秒）
 	 * @return 结果
 	 */
-	public static HttpResult post(String proxyHost, String url, Map<String, String> data, String charSet, Header[] headers, Cookie[] cookies, int connectTimeoutMills, int socketTimeoutMills) {
+	public static HttpResult postBak(String proxyHost, String url, Map<String, String> data, String charSet, Header[] headers, Cookie[] cookies, int connectTimeoutMills, int socketTimeoutMills) {
 		if (url == null) {
 			return HttpResult.failHttpResult(new BasicStatusLine(HttpVersion.HTTP_1_1, 601, "url为空"), new NullPointerException("url is null"));
 		}
@@ -386,6 +386,67 @@ public class HttpClientUtils {
 			return httpClient.execute(httpPost, httpResponse -> handleResponse(httpResponse, cookieStore));
 		} catch (IOException e) {
 			return HttpResult.failHttpResult(new BasicStatusLine(HttpVersion.HTTP_1_1, 600, "http请求异常"), e);
+		}
+	}
+
+	public static HttpResult post(String proxyHost, String url, Map<String, String> data, String charSet, Header[] headers, Cookie[] cookies, int connectTimeoutMills, int socketTimeoutMills) {
+		if (url == null) {
+			return HttpResult.failHttpResult(new BasicStatusLine(HttpVersion.HTTP_1_1, 601, "url为空"), new NullPointerException("url is null"));
+		}
+		String charSetNew = charSet == null ? "UTF-8" : charSet;
+		BasicCookieStore cookieStore = new BasicCookieStore();
+		HttpHost proxy = null;
+		if (proxyHost != null) {
+			String[] ipAndPort = proxyHost.split(":");
+			proxy = new HttpHost(ipAndPort[0], Integer.parseInt(ipAndPort[1]));
+		}
+		CloseableHttpClient httpClient = null;
+		try {
+			SocketConfig socketConfig = SocketConfig.custom().setSoKeepAlive(false).setSoLinger(1).setSoReuseAddress(true).setSoTimeout(socketTimeoutMills).setTcpNoDelay(true).build();
+			RequestConfig config = RequestConfig.custom().setProxy(proxy)//
+					.setConnectTimeout(connectTimeoutMills)//
+					.setSocketTimeout(socketTimeoutMills)//
+					.setConnectionRequestTimeout(connectTimeoutMills)//
+					.setCircularRedirectsAllowed(false)//
+					.setMaxRedirects(1)//
+					.setRedirectsEnabled(true)//
+					.build();
+			HttpClientBuilder builder = HttpClientBuilder.create();
+			builder.disableAutomaticRetries();
+			builder.disableContentCompression();
+			builder.disableCookieManagement();
+			builder.disableRedirectHandling();
+			builder.setConnectionReuseStrategy(new NoConnectionReuseStrategy());
+			builder.setDefaultCookieStore(cookieStore).//
+					setDefaultSocketConfig(socketConfig).//
+					setDefaultRequestConfig(config).build();//
+			httpClient = builder.build();//
+			HttpPost httpPost = new HttpPost(url);
+			List<NameValuePair> parameters = new ArrayList<>();
+			if (data != null && data.size() > 0) {
+				for (Map.Entry<String, String> entry : data.entrySet()) {
+					String k = entry.getKey();
+					String v = entry.getValue();
+					parameters.add(new BasicNameValuePair(k, v));
+				}
+			}
+			UrlEncodedFormEntity formEntity = new UrlEncodedFormEntity(parameters, charSetNew);
+			httpPost.setEntity(formEntity);
+			if (headers != null) {
+				httpPost.setHeaders(headers);
+			}
+			if (cookies != null) {
+				cookieStore.addCookies(cookies);
+			}
+			return httpClient.execute(httpPost, httpResponse -> handleResponse(httpResponse, cookieStore));
+		} catch (IOException e) {
+			return HttpResult.failHttpResult(new BasicStatusLine(HttpVersion.HTTP_1_1, 600, "http请求异常"), e);
+		} finally {
+			try {
+				httpClient.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -497,6 +558,9 @@ public class HttpClientUtils {
 					.setConnectTimeout(connectTimeoutMills)//
 					.setSocketTimeout(socketTimeoutMills)//
 					.setConnectionRequestTimeout(connectTimeoutMills)//
+					.setCircularRedirectsAllowed(false)//
+					.setMaxRedirects(1)//
+					.setRedirectsEnabled(true)//
 					.build();
 			HttpClientBuilder builder = HttpClientBuilder.create();
 			builder.disableAutomaticRetries();
@@ -519,7 +583,7 @@ public class HttpClientUtils {
 		} finally {
 			try {
 				httpClient.close();
-			} catch (IOException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
