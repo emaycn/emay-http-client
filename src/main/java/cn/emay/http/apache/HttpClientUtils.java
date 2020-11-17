@@ -477,7 +477,6 @@ public class HttpClientUtils {
 		if (url == null) {
 			return HttpResult.failHttpResult(new BasicStatusLine(HttpVersion.HTTP_1_1, 601, "url为空"), new NullPointerException("url is null"));
 		}
-		System.out.println(Thread.currentThread().getName() + "开始请求");
 		HttpHost proxy = null;
 		if (proxyHost != null) {
 			String[] ipAndPort = proxyHost.split(":");
@@ -523,7 +522,6 @@ public class HttpClientUtils {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			System.out.println(Thread.currentThread().getName() + "完成请求");
 		}
 	}
 
