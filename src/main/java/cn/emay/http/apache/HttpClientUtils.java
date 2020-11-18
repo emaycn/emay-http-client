@@ -90,7 +90,7 @@ public class HttpClientUtils {
 	 *            读取超时时间（毫秒）
 	 * @return 结果
 	 */
-	public static HttpResult posBytes(String proxyHost, String url, byte[] bytes, Header[] headers, Cookie[] cookies, int connectTimeoutMills, int socketTimeoutMills) {
+	public static HttpResult posBytesBak(String proxyHost, String url, byte[] bytes, Header[] headers, Cookie[] cookies, int connectTimeoutMills, int socketTimeoutMills) {
 		if (url == null) {
 			return HttpResult.failHttpResult(new BasicStatusLine(HttpVersion.HTTP_1_1, 601, "url为空"), new NullPointerException("url is null"));
 		}
@@ -103,6 +103,54 @@ public class HttpClientUtils {
 		try (CloseableHttpClient httpClient = HttpClients.custom().setProxy(proxy).setDefaultCookieStore(cookieStore).build()) {
 			HttpPost httpPost = new HttpPost(url);
 			httpPost.setConfig(RequestConfig.custom().setConnectTimeout(connectTimeoutMills).setSocketTimeout(socketTimeoutMills).build());
+			if (bytes != null) {
+				ByteArrayEntity se = new ByteArrayEntity(bytes);
+				httpPost.setEntity(se);
+			}
+			if (headers != null) {
+				httpPost.setHeaders(headers);
+			}
+			if (cookies != null) {
+				cookieStore.addCookies(cookies);
+			}
+			return httpClient.execute(httpPost, httpResponse -> handleResponse(httpResponse, cookieStore));
+		} catch (IOException e) {
+			return HttpResult.failHttpResult(new BasicStatusLine(HttpVersion.HTTP_1_1, 600, "http请求异常"), e);
+		}
+	}
+
+	public static HttpResult posBytes(String proxyHost, String url, byte[] bytes, Header[] headers, Cookie[] cookies, int connectTimeoutMills, int socketTimeoutMills) {
+		if (url == null) {
+			return HttpResult.failHttpResult(new BasicStatusLine(HttpVersion.HTTP_1_1, 601, "url为空"), new NullPointerException("url is null"));
+		}
+		BasicCookieStore cookieStore = new BasicCookieStore();
+		HttpHost proxy = null;
+		if (proxyHost != null) {
+			String[] ipAndPort = proxyHost.split(":");
+			proxy = new HttpHost(ipAndPort[0], Integer.parseInt(ipAndPort[1]));
+		}
+		CloseableHttpClient httpClient = null;
+		try {
+			SocketConfig socketConfig = SocketConfig.custom().setSoKeepAlive(false).setSoLinger(1).setSoReuseAddress(true).setSoTimeout(socketTimeoutMills).setTcpNoDelay(true).build();
+			RequestConfig config = RequestConfig.custom().setProxy(proxy)//
+					.setConnectTimeout(connectTimeoutMills)//
+					.setSocketTimeout(socketTimeoutMills)//
+					.setConnectionRequestTimeout(connectTimeoutMills)//
+					.setCircularRedirectsAllowed(false)//
+					.setMaxRedirects(1)//
+					.setRedirectsEnabled(true)//
+					.build();
+			HttpClientBuilder builder = HttpClientBuilder.create();
+			// builder.disableAutomaticRetries();
+			// builder.disableContentCompression();
+			// builder.disableCookieManagement();
+			// builder.disableRedirectHandling();
+			builder.setConnectionReuseStrategy(new NoConnectionReuseStrategy());
+			builder.setDefaultCookieStore(cookieStore).//
+					setDefaultSocketConfig(socketConfig).//
+					setDefaultRequestConfig(config).build();//
+			httpClient = builder.build();//
+			HttpPost httpPost = new HttpPost(url);
 			if (bytes != null) {
 				ByteArrayEntity se = new ByteArrayEntity(bytes);
 				httpPost.setEntity(se);
@@ -177,7 +225,7 @@ public class HttpClientUtils {
 	 *            读取超时时间（毫秒）
 	 * @return 结果
 	 */
-	public static HttpResult postJson(String proxyHost, String url, String json, String charSet, Header[] headers, Cookie[] cookies, int connectTimeoutMills, int socketTimeoutMills) {
+	public static HttpResult postJsonBak(String proxyHost, String url, String json, String charSet, Header[] headers, Cookie[] cookies, int connectTimeoutMills, int socketTimeoutMills) {
 		if (url == null) {
 			return HttpResult.failHttpResult(new BasicStatusLine(HttpVersion.HTTP_1_1, 601, "url为空"), new NullPointerException("url is null"));
 		}
@@ -191,6 +239,56 @@ public class HttpClientUtils {
 		try (CloseableHttpClient httpClient = HttpClients.custom().setProxy(proxy).setDefaultCookieStore(cookieStore).build()) {
 			HttpPost httpPost = new HttpPost(url);
 			httpPost.setConfig(RequestConfig.custom().setConnectTimeout(connectTimeoutMills).setSocketTimeout(socketTimeoutMills).build());
+			httpPost.addHeader(new BasicHeader("content-type", "application/json;charset=UTF-8"));
+			if (json != null) {
+				StringEntity se = new StringEntity(json, charSetNew);
+				httpPost.setEntity(se);
+			}
+			if (headers != null) {
+				httpPost.setHeaders(headers);
+			}
+			if (cookies != null) {
+				cookieStore.addCookies(cookies);
+			}
+			return httpClient.execute(httpPost, httpResponse -> handleResponse(httpResponse, cookieStore));
+		} catch (IOException e) {
+			return HttpResult.failHttpResult(new BasicStatusLine(HttpVersion.HTTP_1_1, 600, "http请求异常"), e);
+		}
+	}
+
+	public static HttpResult postJson(String proxyHost, String url, String json, String charSet, Header[] headers, Cookie[] cookies, int connectTimeoutMills, int socketTimeoutMills) {
+		if (url == null) {
+			return HttpResult.failHttpResult(new BasicStatusLine(HttpVersion.HTTP_1_1, 601, "url为空"), new NullPointerException("url is null"));
+		}
+		String charSetNew = charSet == null ? "UTF-8" : charSet;
+		BasicCookieStore cookieStore = new BasicCookieStore();
+		HttpHost proxy = null;
+		if (proxyHost != null) {
+			String[] ipAndPort = proxyHost.split(":");
+			proxy = new HttpHost(ipAndPort[0], Integer.parseInt(ipAndPort[1]));
+		}
+		CloseableHttpClient httpClient = null;
+		try {
+			SocketConfig socketConfig = SocketConfig.custom().setSoKeepAlive(false).setSoLinger(1).setSoReuseAddress(true).setSoTimeout(socketTimeoutMills).setTcpNoDelay(true).build();
+			RequestConfig config = RequestConfig.custom().setProxy(proxy)//
+					.setConnectTimeout(connectTimeoutMills)//
+					.setSocketTimeout(socketTimeoutMills)//
+					.setConnectionRequestTimeout(connectTimeoutMills)//
+					.setCircularRedirectsAllowed(false)//
+					.setMaxRedirects(1)//
+					.setRedirectsEnabled(true)//
+					.build();
+			HttpClientBuilder builder = HttpClientBuilder.create();
+			// builder.disableAutomaticRetries();
+			// builder.disableContentCompression();
+			// builder.disableCookieManagement();
+			// builder.disableRedirectHandling();
+			builder.setConnectionReuseStrategy(new NoConnectionReuseStrategy());
+			builder.setDefaultCookieStore(cookieStore).//
+					setDefaultSocketConfig(socketConfig).//
+					setDefaultRequestConfig(config).build();//
+			httpClient = builder.build();//
+			HttpPost httpPost = new HttpPost(url);
 			httpPost.addHeader(new BasicHeader("content-type", "application/json;charset=UTF-8"));
 			if (json != null) {
 				StringEntity se = new StringEntity(json, charSetNew);
@@ -265,7 +363,7 @@ public class HttpClientUtils {
 	 *            读取超时时间（毫秒）
 	 * @return 结果
 	 */
-	public static HttpResult postString(String proxyHost, String url, String params, String charSet, Header[] headers, Cookie[] cookies, int connectTimeoutMills, int socketTimeoutMills) {
+	public static HttpResult postStringBak(String proxyHost, String url, String params, String charSet, Header[] headers, Cookie[] cookies, int connectTimeoutMills, int socketTimeoutMills) {
 		if (url == null) {
 			return HttpResult.failHttpResult(new BasicStatusLine(HttpVersion.HTTP_1_1, 601, "url为空"), new NullPointerException("url is null"));
 		}
@@ -279,6 +377,55 @@ public class HttpClientUtils {
 		try (CloseableHttpClient httpClient = HttpClients.custom().setProxy(proxy).setDefaultCookieStore(cookieStore).build()) {
 			HttpPost httpPost = new HttpPost(url);
 			httpPost.setConfig(RequestConfig.custom().setConnectTimeout(connectTimeoutMills).setSocketTimeout(socketTimeoutMills).build());
+			if (params != null) {
+				StringEntity se = new StringEntity(params, charSetNew);
+				httpPost.setEntity(se);
+			}
+			if (headers != null) {
+				httpPost.setHeaders(headers);
+			}
+			if (cookies != null) {
+				cookieStore.addCookies(cookies);
+			}
+			return httpClient.execute(httpPost, httpResponse -> handleResponse(httpResponse, cookieStore));
+		} catch (IOException e) {
+			return HttpResult.failHttpResult(new BasicStatusLine(HttpVersion.HTTP_1_1, 600, "http请求异常"), e);
+		}
+	}
+
+	public static HttpResult postString(String proxyHost, String url, String params, String charSet, Header[] headers, Cookie[] cookies, int connectTimeoutMills, int socketTimeoutMills) {
+		if (url == null) {
+			return HttpResult.failHttpResult(new BasicStatusLine(HttpVersion.HTTP_1_1, 601, "url为空"), new NullPointerException("url is null"));
+		}
+		String charSetNew = charSet == null ? "UTF-8" : charSet;
+		BasicCookieStore cookieStore = new BasicCookieStore();
+		HttpHost proxy = null;
+		if (proxyHost != null) {
+			String[] ipAndPort = proxyHost.split(":");
+			proxy = new HttpHost(ipAndPort[0], Integer.parseInt(ipAndPort[1]));
+		}
+		CloseableHttpClient httpClient = null;
+		try {
+			SocketConfig socketConfig = SocketConfig.custom().setSoKeepAlive(false).setSoLinger(1).setSoReuseAddress(true).setSoTimeout(socketTimeoutMills).setTcpNoDelay(true).build();
+			RequestConfig config = RequestConfig.custom().setProxy(proxy)//
+					.setConnectTimeout(connectTimeoutMills)//
+					.setSocketTimeout(socketTimeoutMills)//
+					.setConnectionRequestTimeout(connectTimeoutMills)//
+					.setCircularRedirectsAllowed(false)//
+					.setMaxRedirects(1)//
+					.setRedirectsEnabled(true)//
+					.build();
+			HttpClientBuilder builder = HttpClientBuilder.create();
+			// builder.disableAutomaticRetries();
+			// builder.disableContentCompression();
+			// builder.disableCookieManagement();
+			// builder.disableRedirectHandling();
+			builder.setConnectionReuseStrategy(new NoConnectionReuseStrategy());
+			builder.setDefaultCookieStore(cookieStore).//
+					setDefaultSocketConfig(socketConfig).//
+					setDefaultRequestConfig(config).build();//
+			httpClient = builder.build();//
+			HttpPost httpPost = new HttpPost(url);
 			if (params != null) {
 				StringEntity se = new StringEntity(params, charSetNew);
 				httpPost.setEntity(se);
@@ -412,10 +559,10 @@ public class HttpClientUtils {
 					.setRedirectsEnabled(true)//
 					.build();
 			HttpClientBuilder builder = HttpClientBuilder.create();
-			builder.disableAutomaticRetries();
-			builder.disableContentCompression();
-			builder.disableCookieManagement();
-			builder.disableRedirectHandling();
+			// builder.disableAutomaticRetries();
+			// builder.disableContentCompression();
+			// builder.disableCookieManagement();
+			// builder.disableRedirectHandling();
 			builder.setConnectionReuseStrategy(new NoConnectionReuseStrategy());
 			builder.setDefaultCookieStore(cookieStore).//
 					setDefaultSocketConfig(socketConfig).//
@@ -563,10 +710,10 @@ public class HttpClientUtils {
 					.setRedirectsEnabled(true)//
 					.build();
 			HttpClientBuilder builder = HttpClientBuilder.create();
-			builder.disableAutomaticRetries();
-			builder.disableContentCompression();
-			builder.disableCookieManagement();
-			builder.disableRedirectHandling();
+			// builder.disableAutomaticRetries();
+			// builder.disableContentCompression();
+			// builder.disableCookieManagement();
+			// builder.disableRedirectHandling();
 			builder.setConnectionReuseStrategy(new NoConnectionReuseStrategy());
 			builder.setDefaultCookieStore(cookieStore).//
 					setDefaultSocketConfig(socketConfig).//
